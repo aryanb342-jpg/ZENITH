@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Provider } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { Provider, useDispatch } from 'react-redux';
 import { store } from './store';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
@@ -11,10 +11,18 @@ import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
 import Static from './pages/Static';
+import { fetchProducts, fetchCoupons, fetchUserProfile } from './store/slices/watchSlice';
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState('home');
   const [pageParams, setPageParams] = useState(null);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchProducts());
+    dispatch(fetchCoupons());
+    dispatch(fetchUserProfile());
+  }, [dispatch]);
 
   const handlePageChange = (page, params = null) => {
     setCurrentPage(page);
