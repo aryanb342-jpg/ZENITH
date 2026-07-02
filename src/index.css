@@ -1,0 +1,190 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-gold-50: #fcf9f2;
+  --color-gold-100: #f7eedb;
+  --color-gold-200: #eddcb9;
+  --color-gold-300: #dec18d;
+  --color-gold-400: #cfa15f;
+  --color-gold-500: #c2883e;
+  --color-gold-600: #a76d30;
+  --color-gold-700: #8b5527;
+  --color-gold-800: #714221;
+  --color-gold-900: #5d351d;
+  --color-gold-950: #361b0f;
+
+  --color-luxury-gold: #c5a880;
+  --color-luxury-gold-dark: #93744d;
+  --color-luxury-red: #e10600; /* Signature Tissot Red */
+  --color-luxury-dark: #ffffff; /* White cards */
+  --color-luxury-bg: #f5efe6; /* Light warm sand/beige */
+  --color-luxury-gray: #eae2d5; /* Warm gray/concrete accent */
+  --color-luxury-text: #201e1b; /* Charcoal primary text */
+  --color-luxury-muted: #6e675f; /* Muted taupe/gray */
+  
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+:root {
+  font-family: var(--font-sans);
+  color-scheme: light;
+}
+
+body {
+  background-color: var(--color-luxury-bg);
+  color: var(--color-luxury-text);
+  margin: 0;
+  overflow-x: hidden;
+  /* Apply a very subtle background pattern/gradient matching the watch aesthetic */
+  background-image: radial-gradient(circle at 100% 100%, rgba(197, 168, 128, 0.05) 0%, transparent 40%),
+                    radial-gradient(circle at 0% 0%, rgba(234, 226, 213, 0.3) 0%, transparent 60%);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-luxury-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c5a880;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-luxury-gold-dark);
+}
+
+/* Luxury Glassmorphism Utilities */
+.glass {
+  background: rgba(253, 251, 247, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(32, 30, 27, 0.08);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(32, 30, 27, 0.05);
+}
+
+/* Custom Animations */
+.hover-gold-glow:hover {
+  box-shadow: 0 0 15px rgba(197, 168, 128, 0.35);
+  border-color: var(--color-luxury-gold);
+}
+
+.star-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.star-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 55%
+  );
+  transform: rotate(45deg);
+  transition: transform 0.5s ease;
+}
+
+.star-shine:hover::after {
+  transform: translate(50%, 50%) rotate(45deg);
+}
+
+/* ==========================================================================
+   LIGHT LUXURY THEME COMPATIBILITY OVERRIDES
+   ========================================================================== */
+
+/* Overrides for text-white and text-gray classes to adapt them to light layouts */
+.text-white:not(button *, .bg-luxury-red *, .bg-red-700 *, .bg-red-800 *, .bg-\[\#1c1a17\] *, footer *, .bg-gradient-to-r *, .text-emerald-400 *, .font-mono *) {
+  color: var(--color-luxury-text) !important;
+}
+
+.text-gray-300:not(footer *, .bg-\[\#1c1a17\] *, button *, .bg-luxury-red *, .bg-red-700 *, .bg-red-800 *, .bg-black\/30 *, .bg-black\/35 *, .bg-gradient-to-r *) {
+  color: var(--color-luxury-muted) !important;
+}
+
+.text-gray-400:not(footer *, .bg-\[\#1c1a17\] *, button *, .bg-luxury-red *, .bg-red-700 *, .bg-red-800 *, .bg-black\/30 *, .bg-black\/35 *, .absolute.top-3.left-3 *, .bg-gradient-to-r *) {
+  color: var(--color-luxury-muted) !important;
+}
+
+.text-gray-500:not(footer *, .bg-\[\#1c1a17\] *, button *, .bg-luxury-red *, .bg-red-700 *, .bg-red-800 *) {
+  color: rgba(32, 30, 27, 0.6) !important;
+}
+
+/* Light background inputs, drop-downs and textareas */
+input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+  background-color: #ffffff !important;
+  color: var(--color-luxury-text) !important;
+  border: 1px solid rgba(32, 30, 27, 0.15) !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-luxury-gold-dark) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(147, 116, 77, 0.15) !important;
+}
+
+/* Adapting card, list and sidebar backgrounds to the warm light sand style */
+.bg-luxury-gray:not(footer *, .bg-\[\#1c1a17\] *) {
+  background-color: #ffffff !important;
+  border-color: rgba(32, 30, 27, 0.08) !important;
+}
+
+.bg-luxury-gray\/30:not(footer *, .bg-\[\#1c1a17\] *) {
+  background-color: rgba(234, 226, 213, 0.3) !important;
+}
+
+.bg-luxury-dark:not(footer *, .bg-\[\#1c1a17\] *, .glass *, button *) {
+  background-color: #ffffff !important;
+  border-color: rgba(32, 30, 27, 0.08) !important;
+}
+
+.bg-luxury-dark\/50:not(footer *, .bg-\[\#1c1a17\] *) {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Checkbox and toggle indicators */
+.bg-luxury-gray.text-gray-500 {
+  background-color: rgba(32, 30, 27, 0.06) !important;
+  color: rgba(32, 30, 27, 0.4) !important;
+}
+
+/* Border overrides */
+.border-white\/5 {
+  border-color: rgba(32, 30, 27, 0.08) !important;
+}
+
+.border-white\/10 {
+  border-color: rgba(32, 30, 27, 0.12) !important;
+}
+
+/* White bg buttons with dark text override to rich charcoal buttons */
+.bg-white.text-luxury-dark {
+  background-color: var(--color-luxury-text) !important;
+  color: #ffffff !important;
+  border-color: var(--color-luxury-text) !important;
+}
+
+.bg-white.text-luxury-dark:hover {
+  background-color: var(--color-luxury-gold-dark) !important;
+  border-color: var(--color-luxury-gold-dark) !important;
+}
