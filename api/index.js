@@ -30,7 +30,12 @@ app.use('/api/coupons', couponRoutes);
 
 // Base Endpoint
 app.get('/api', (req, res) => {
-  res.json({ message: 'Welcome to the ZENITH Watches API' });
+  res.json({
+    message: 'Welcome to the ZENITH Watches API',
+    url: req.url,
+    path: req.path,
+    headers: req.headers
+  });
 });
 
 // Database Seed Function
