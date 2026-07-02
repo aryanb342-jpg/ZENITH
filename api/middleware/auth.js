@@ -14,6 +14,7 @@ export const protect = async (req, res, next) => {
       // Add user info to request object
       req.user = {
         id: decoded.id,
+        name: decoded.name,
         email: decoded.email,
         role: decoded.role
       };
