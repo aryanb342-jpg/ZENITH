@@ -22,16 +22,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Debug Middleware
+// Vercel Serverless Routing URL Restorer
 app.use((req, res, next) => {
-  if (req.query && req.query.debug === 'true') {
-    return res.json({
-      originalUrl: req.originalUrl,
-      url: req.url,
-      path: req.path,
-      query: req.query,
-      headers: req.headers
-    });
+  if (req.headers['x-now-route-asis'] || process.env.VERCEL) {
+    req.url = req.originalUrl;
   }
   next();
 });
@@ -44,12 +38,7 @@ app.use('/api/coupons', couponRoutes);
 
 // Base Endpoint
 app.get('/api', (req, res) => {
-  res.json({
-    message: 'Welcome to the ZENITH Watches API',
-    url: req.url,
-    path: req.path,
-    headers: req.headers
-  });
+  res.json({ message: 'Welcome to the ZENITH Watches API' });
 });
 
 // Database Seed Function
