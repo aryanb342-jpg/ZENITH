@@ -40,23 +40,16 @@ body {
   overflow-x: hidden;
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - Completely Hidden / Transparent */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-luxury-bg);
-}
-
-::-webkit-scrollbar-thumb {
-  background: #c5a880;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-luxury-gold-dark);
+  display: none; /* Chrome, Safari, Opera */
+  width: 0;
+  height: 0;
 }
 
 /* Luxury Glassmorphism Utilities */
