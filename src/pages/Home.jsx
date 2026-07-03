@@ -174,7 +174,7 @@ export default function Home({ onPageChange }) {
           <div className="w-12 h-[2px] bg-luxury-gold-dark mx-auto mt-4" />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full px-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1 w-full px-0">
           {featuredProducts.map((product) => (
             <ProductCard
               key={product.id}
