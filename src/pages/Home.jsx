@@ -201,13 +201,13 @@ export default function Home({ onPageChange }) {
               className="group relative h-[450px] border border-luxury-text/10 rounded-md overflow-hidden cursor-pointer flex flex-col justify-end p-8 bg-white shadow-sm hover:shadow-md transition-all duration-300"
             >
               {/* Product Background Image */}
-              <div className="absolute inset-0 z-0 opacity-80 group-hover:opacity-95 transition duration-500 flex items-center justify-center p-12 bg-luxury-bg/30">
+              <div className="absolute inset-0 z-0 opacity-80 group-hover:opacity-95 transition duration-500 flex items-center justify-center p-0 bg-luxury-bg/30">
                 <img
                   src={col.image}
                   alt={col.name}
-                  className="max-h-full max-w-full object-contain transform group-hover:scale-105 transition duration-500"
+                  className="w-full h-full object-cover transform group-hover:scale-105 transition duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-white via-white/25 to-transparent" />
               </div>
 
               {/* Text Area */}
