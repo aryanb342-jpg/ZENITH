@@ -266,12 +266,16 @@ export default function Home({ onPageChange }) {
         </div>
 
         <div className="h-[500px] bg-luxury-bg/50 border border-luxury-text/5 rounded-md overflow-hidden relative p-0">
-          <Compass className="absolute text-luxury-gold-dark/5 w-80 h-80 -right-20 -bottom-20 rotate-12" />
-          <img
-            src="/assets/media__1782899491320.jpg"
-            alt="Zenith Manufacturing"
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
             className="w-full h-full object-cover relative z-10"
-          />
+          >
+            <source src="/assets/manufacture.mp4" type="video/mp4" />
+            Your browser does not support HTML5 video.
+          </video>
         </div>
       </section>
 
