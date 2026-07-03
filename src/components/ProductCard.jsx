@@ -29,93 +29,61 @@ export default function ProductCard({ product, onPageChange }) {
     dispatch(toggleWishlist(product.id));
   };
 
+  const specItems = [];
+  if (product.specs?.case) specItems.push(product.specs.case);
+  if (product.specs?.movement) specItems.push(product.specs.movement);
+  if (product.specs?.strap) specItems.push(product.specs.strap);
+  const specLine = specItems.length > 0 ? specItems.join(' • ') : 'Swiss Quartz';
+
   return (
     <div 
       onClick={() => onPageChange('product-detail', { id: product.id })}
-      className="group relative bg-white border border-luxury-text/10 hover:border-luxury-gold/50 transition-all duration-300 rounded-md overflow-hidden cursor-pointer hover-gold-glow flex flex-col h-full shadow-sm"
+      className="group relative flex flex-col h-full cursor-pointer bg-transparent transition-all duration-300"
     >
-      {/* Category Tag */}
-      <span className="absolute top-3 left-3 bg-white/70 backdrop-blur-md border border-luxury-text/5 text-[9px] font-bold tracking-widest text-luxury-text px-2 py-1 uppercase rounded-sm z-10">
-        {product.category}
-      </span>
-      
-      {/* Wishlist Button */}
+      {/* Wishlist Button (Minimalist Wireframe Heart matching screenshot) */}
       <button
         onClick={handleWishlistToggle}
-        className={`absolute top-3 right-3 p-1.5 rounded-full z-10 transition duration-300 border border-luxury-text/5 ${
-          isWishlisted 
-            ? 'bg-luxury-red text-white' 
-            : 'bg-white/70 hover:bg-white text-luxury-text'
-        }`}
+        className="absolute top-4 right-4 z-10 p-1 text-luxury-text hover:text-luxury-red transition duration-300 focus:outline-none"
       >
-        <Heart size={16} fill={isWishlisted ? "white" : "none"} />
+        <Heart 
+          size={18} 
+          className="transition duration-300" 
+          fill={isWishlisted ? "#e10600" : "none"} 
+          stroke={isWishlisted ? "#e10600" : "currentColor"} 
+        />
       </button>
 
-      {/* Image container */}
-      <div className="aspect-square bg-luxury-gray/40 flex items-center justify-center p-0 overflow-hidden relative">
+      {/* Image container (Centered with padding on solid light gray background) */}
+      <div className="aspect-square bg-[#f6f6f6] rounded-md flex items-center justify-center p-8 overflow-hidden relative">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+          className="max-h-[85%] max-w-[85%] object-contain transform group-hover:scale-105 transition-transform duration-500"
         />
         
         {/* Out of Stock Overlay */}
         {product.stock === 0 && (
-          <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-            <span className="text-luxury-red font-bold text-xs tracking-widest uppercase border border-luxury-red px-3 py-1.5">
+          <div className="absolute inset-0 bg-[#f6f6f6]/80 flex items-center justify-center">
+            <span className="text-luxury-red font-bold text-[10px] tracking-widest uppercase border border-luxury-red px-2.5 py-1">
               Sold Out
             </span>
           </div>
         )}
       </div>
 
-      {/* Text Details */}
-      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-        <div className="space-y-1">
-          <p className="text-[10px] text-luxury-muted font-bold uppercase tracking-wider">ZENITH SWISS</p>
+      {/* Text Details (Clean, left-aligned, no border, matching the Tissot layout) */}
+      <div className="pt-3 pb-2 bg-transparent space-y-1 flex flex-col justify-between flex-1">
+        <div className="space-y-0.5">
           <h3 className="text-luxury-text text-sm font-semibold tracking-wide group-hover:text-luxury-gold-dark transition duration-200 line-clamp-1">
             {product.name}
           </h3>
-          
-          {/* Ratings display */}
-          <div className="flex items-center space-x-1.5 pt-1 h-4">
-            {averageRating ? (
-              <>
-                <div className="flex text-luxury-gold-dark">
-                  {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      size={10} 
-                      fill={i < Math.floor(Number(averageRating)) ? "var(--color-luxury-gold-dark)" : "none"} 
-                      className="stroke-1"
-                    />
-                  ))}
-                </div>
-                <span className="text-[10px] text-luxury-muted">({approvedReviews.length})</span>
-              </>
-            ) : (
-              <span className="text-[9px] text-luxury-muted/70 tracking-wider">NO REVIEWS YET</span>
-            )}
-          </div>
+          <p className="text-[11px] text-luxury-muted font-normal tracking-wide">
+            {specLine}
+          </p>
         </div>
-
-        <div className="flex items-center justify-between pt-2">
-          {/* Price */}
-          <span className="text-luxury-text font-bold text-sm">
-            ${product.price.toLocaleString()}
-          </span>
-
-          {/* Quick Shop Button */}
-          {product.stock > 0 && (
-            <button
-              onClick={handleAddToCart}
-              className="p-2 bg-luxury-bg border border-luxury-text/10 hover:border-luxury-gold-dark hover:bg-luxury-gold-dark hover:text-white text-luxury-text rounded-md transition duration-300 cursor-pointer"
-              title="Add to Cart"
-            >
-              <ShoppingBag size={14} />
-            </button>
-          )}
-        </div>
+        <p className="text-luxury-text text-xs sm:text-sm font-semibold pt-1">
+          ${product.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+        </p>
       </div>
     </div>
   );
