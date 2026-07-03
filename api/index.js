@@ -51,7 +51,8 @@ app.get('/api/health', (req, res) => {
       node_env: process.env.NODE_ENV
     },
     mongoose: {
-      readyState: mongoose.connection.readyState // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
+      readyState: mongoose.connection.readyState, // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
+      error: dbConnectionError
     }
   });
 });
@@ -178,6 +179,7 @@ const seedDatabase = async () => {
 };
 
 // Database Connection
+let dbConnectionError = null;
 const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/zenith-watches';
 mongoose.connect(mongoURI)
   .then(async () => {
@@ -186,6 +188,7 @@ mongoose.connect(mongoURI)
   })
   .catch((err) => {
     console.error('MongoDB connection error:', err);
+    dbConnectionError = err.message || err.toString();
   });
 
 const PORT = process.env.PORT || 5000;
