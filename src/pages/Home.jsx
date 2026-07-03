@@ -122,7 +122,7 @@ export default function Home({ onPageChange }) {
         >
           <div className="absolute inset-0 z-0">
             <div 
-              className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-[2000ms]" 
+              className="absolute inset-0 bg-cover bg-[position:center_12%] group-hover:scale-105 transition-transform duration-[2000ms]" 
               style={{ backgroundImage: "url('/assets/men_watches.jpg')" }} 
             />
             <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-white/10 to-transparent" />
@@ -146,7 +146,7 @@ export default function Home({ onPageChange }) {
         >
           <div className="absolute inset-0 z-0">
             <div 
-              className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-[2000ms]" 
+              className="absolute inset-0 bg-cover bg-[position:center_12%] group-hover:scale-105 transition-transform duration-[2000ms]" 
               style={{ backgroundImage: "url('/assets/women_watches.jpg')" }} 
             />
             <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-white/10 to-transparent" />
