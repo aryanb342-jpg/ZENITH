@@ -237,35 +237,35 @@ export default function Home({ onPageChange }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
 
       {/* Brand Story & Manufacturing Section */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white border border-luxury-text/5 p-8 sm:p-16 rounded-md items-center shadow-sm">
-        <div className="space-y-6">
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-16 bg-white border border-luxury-text/5 p-10 sm:p-24 rounded-md items-center shadow-sm">
+        <div className="space-y-8">
           <div className="flex items-center space-x-1.5 text-luxury-gold-dark">
-            <Award size={18} />
-            <span className="text-[10px] font-bold tracking-widest uppercase">GENUINE CRAFTSMANSHIP</span>
+            <Award size={20} />
+            <span className="text-xs font-bold tracking-widest uppercase">GENUINE CRAFTSMANSHIP</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-luxury-text leading-tight uppercase">
+          <h2 className="text-4xl sm:text-5xl font-serif font-extrabold text-luxury-text leading-tight uppercase">
             A Manufacture of Precise Dreams
           </h2>
-          <p className="text-luxury-muted text-xs sm:text-sm leading-relaxed font-light">
+          <p className="text-luxury-muted text-sm sm:text-base leading-relaxed font-light">
             Founded by Georges Favre-Jacot in Le Locle, Switzerland, KHRONIQ consolidated all watchmaking trades under one roof—creating the first integrated Manufacture. Every chronograph wheel, balance spring, and casing reflects our unrelenting drive for precision.
           </p>
-          <div className="grid grid-cols-3 gap-6 pt-4 text-center">
+          <div className="grid grid-cols-3 gap-6 pt-6 text-center">
             <div className="border-r border-luxury-text/10 space-y-1">
-              <span className="text-2xl font-bold text-luxury-gold-dark">36K</span>
-              <p className="text-[9px] text-luxury-muted uppercase tracking-widest">vibrations/hour</p>
+              <span className="text-3xl sm:text-4xl font-extrabold text-luxury-gold-dark">36K</span>
+              <p className="text-xs text-luxury-muted uppercase tracking-widest">vibrations/hour</p>
             </div>
             <div className="border-r border-luxury-text/10 space-y-1">
-              <span className="text-2xl font-bold text-luxury-gold-dark">100%</span>
-              <p className="text-[9px] text-luxury-muted uppercase tracking-widest">Swiss Made</p>
+              <span className="text-3xl sm:text-4xl font-extrabold text-luxury-gold-dark">100%</span>
+              <p className="text-xs text-luxury-muted uppercase tracking-widest">Swiss Made</p>
             </div>
             <div className="space-y-1">
-              <span className="text-2xl font-bold text-luxury-gold-dark">2,300+</span>
-              <p className="text-[9px] text-luxury-muted uppercase tracking-widest">chronometry prizes</p>
+              <span className="text-3xl sm:text-4xl font-extrabold text-luxury-gold-dark">2,300+</span>
+              <p className="text-xs text-luxury-muted uppercase tracking-widest">chronometry prizes</p>
             </div>
           </div>
         </div>
 
-        <div className="h-96 bg-luxury-bg/50 border border-luxury-text/5 rounded-md overflow-hidden relative p-0">
+        <div className="h-[500px] bg-luxury-bg/50 border border-luxury-text/5 rounded-md overflow-hidden relative p-0">
           <Compass className="absolute text-luxury-gold-dark/5 w-80 h-80 -right-20 -bottom-20 rotate-12" />
           <img
             src="/assets/media__1782899491320.jpg"
