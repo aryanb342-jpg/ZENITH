@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
 import ProductCard from '../components/ProductCard';
 import { motion } from 'framer-motion';
-import { Star, Award, Compass, ArrowRight } from 'lucide-react';
+import { Star, Award, Compass, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Home({ onPageChange }) {
   const products = useSelector(state => state.watch.products);
+  const sliderRef = useRef(null);
 
-  // Show first 4 products on home page
-  const featuredProducts = products.slice(0, 4);
+  // Show first 8 products in the slider catalog
+  const featuredProducts = products.slice(0, 8);
 
   const collections = [
     {
@@ -164,27 +165,64 @@ export default function Home({ onPageChange }) {
         </div>
       </section>
 
-      {/* Wrapping the rest of the home sections to align them beautifully */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 space-y-24">
+      </div> {/* Close max-w-7xl container to go wider */}
 
-      {/* Featured Collection Grid */}
-      <section className="space-y-8">
-        <div className="text-center max-w-2xl mx-auto space-y-2">
-          <p className="text-[10px] text-luxury-gold-dark font-bold tracking-widest uppercase">Signature Catalog</p>
-          <h2 className="text-3xl font-bold font-serif text-luxury-text tracking-wide uppercase">Featured Masterpieces</h2>
-          <div className="w-12 h-[2px] bg-luxury-gold-dark mx-auto mt-4" />
+      {/* Featured Masterpieces Slider (Fuller width for wide screens) */}
+      <section className="w-full px-4 sm:px-8 lg:px-16 py-24 bg-transparent space-y-8">
+        <div className="flex items-end justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-left space-y-2">
+            <p className="text-[10px] text-luxury-gold-dark font-bold tracking-widest uppercase">Signature Catalog</p>
+            <h2 className="text-3xl font-bold font-serif text-luxury-text tracking-wide uppercase">Featured Masterpieces</h2>
+            <div className="w-12 h-[2px] bg-luxury-gold-dark mt-4" />
+          </div>
+          
+          {/* Navigation Arrows */}
+          <div className="flex space-x-3">
+            <button
+              onClick={() => {
+                if (sliderRef.current) {
+                  const { scrollLeft, clientWidth } = sliderRef.current;
+                  sliderRef.current.scrollTo({ left: scrollLeft - clientWidth / 2, behavior: 'smooth' });
+                }
+              }}
+              className="p-3 rounded-full border border-luxury-text/10 hover:border-luxury-gold-dark hover:bg-luxury-gold-dark hover:text-white text-luxury-text transition-all duration-300 cursor-pointer focus:outline-none"
+              title="Slide Left"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              onClick={() => {
+                if (sliderRef.current) {
+                  const { scrollLeft, clientWidth } = sliderRef.current;
+                  sliderRef.current.scrollTo({ left: scrollLeft + clientWidth / 2, behavior: 'smooth' });
+                }
+              }}
+              className="p-3 rounded-full border border-luxury-text/10 hover:border-luxury-gold-dark hover:bg-luxury-gold-dark hover:text-white text-luxury-text transition-all duration-300 cursor-pointer focus:outline-none"
+              title="Slide Right"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Swipable Track */}
+        <div 
+          ref={sliderRef}
+          className="flex space-x-6 overflow-x-auto pb-6 scroll-smooth snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-4 sm:px-8 lg:px-16"
+        >
           {featuredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onPageChange={onPageChange}
-            />
+            <div key={product.id} className="min-w-[280px] sm:min-w-[320px] md:min-w-[340px] lg:min-w-[360px] snap-start flex-shrink-0">
+              <ProductCard
+                product={product}
+                onPageChange={onPageChange}
+              />
+            </div>
           ))}
         </div>
       </section>
+
+      {/* Wrapping the rest of the home sections to align them beautifully */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
 
       {/* Collections Highlight Banner (Tissot Grid Style) */}
       <section className="space-y-12">
