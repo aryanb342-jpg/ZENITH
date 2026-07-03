@@ -48,8 +48,8 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
 
   const isHome = currentPage === 'home';
   const headerClass = isHome 
-    ? "absolute top-0 left-0 right-0 z-50 bg-gradient-to-r from-black/45 via-transparent to-black/45 border-b border-white/10 transition-all duration-300"
-    : "sticky top-0 z-50 glass border-b border-luxury-text/10 transition-all duration-300";
+    ? "absolute top-0 left-0 right-0 z-50 bg-black/25 backdrop-blur-xl border-b border-white/10 transition-all duration-300"
+    : "sticky top-0 z-50 bg-white/30 backdrop-blur-xl border-b border-black/5 transition-all duration-300";
 
   const textColorClass = isHome 
     ? "text-white hover:text-luxury-gold" 
