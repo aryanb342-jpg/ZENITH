@@ -199,9 +199,9 @@ export default function Home({ onPageChange }) {
               {/* Text Area */}
               <div className="relative z-10 space-y-4">
                 <span className="text-xs sm:text-sm text-black font-extrabold tracking-widest uppercase">{col.tagline}</span>
-                <h3 className="text-3xl sm:text-4xl font-serif font-black text-black uppercase group-hover:text-luxury-gold-dark transition duration-200">{col.name}</h3>
+                <h3 className="text-3xl sm:text-4xl font-serif font-black text-black uppercase group-hover:text-[#0f4605] transition duration-200">{col.name}</h3>
                 <p className="text-black text-sm sm:text-base font-semibold leading-relaxed line-clamp-2">{col.desc}</p>
-                <div className="flex items-center space-x-2 text-black hover:text-luxury-gold-dark text-sm font-bold pt-2">
+                <div className="flex items-center space-x-2 text-black group-hover:text-[#0f4605] text-sm font-bold pt-2 transition-colors duration-200">
                   <span>DISCOVER</span>
                   <ArrowRight size={14} className="transform group-hover:translate-x-1 transition-transform" />
                 </div>
