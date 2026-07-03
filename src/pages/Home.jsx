@@ -118,7 +118,7 @@ export default function Home({ onPageChange }) {
         {/* Women's Column */}
         <div 
           onClick={() => onPageChange('shop', { gender: 'women' })}
-          className="group relative h-[550px] flex flex-col justify-end p-8 sm:p-12 overflow-hidden cursor-pointer bg-luxury-gray"
+          className="group relative h-[700px] flex flex-col justify-end p-8 sm:p-12 overflow-hidden cursor-pointer bg-luxury-gray"
         >
           <div className="absolute inset-0 z-0">
             <div 
@@ -142,7 +142,7 @@ export default function Home({ onPageChange }) {
         {/* Men's Column */}
         <div 
           onClick={() => onPageChange('shop', { gender: 'men' })}
-          className="group relative h-[550px] flex flex-col justify-end p-8 sm:p-12 overflow-hidden cursor-pointer bg-luxury-gray"
+          className="group relative h-[700px] flex flex-col justify-end p-8 sm:p-12 overflow-hidden cursor-pointer bg-luxury-gray"
         >
           <div className="absolute inset-0 z-0">
             <div 
@@ -165,7 +165,7 @@ export default function Home({ onPageChange }) {
       </section>
 
       {/* Featured Collection Grid (Full width edge-to-edge layout, touching margins) */}
-      <section className="w-full py-24 bg-transparent space-y-8">
+      <section className="w-full pt-36 pb-24 bg-transparent space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <p className="text-[10px] text-luxury-gold-dark font-bold tracking-widest uppercase">Signature Catalog</p>
           <h2 className="text-3xl font-bold font-serif text-luxury-text tracking-wide uppercase">Featured Masterpieces</h2>
