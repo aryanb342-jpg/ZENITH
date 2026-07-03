@@ -114,7 +114,7 @@ export default function Home({ onPageChange }) {
       </section>
 
       {/* Men & Women Category Split Banner (Full width edge-to-edge, half-half split, no spacing/borders) */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-0 w-full overflow-hidden border-b border-white/5">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-0 w-full overflow-hidden border-b border-white/5 mt-16">
         {/* Women's Column */}
         <div 
           onClick={() => onPageChange('shop', { gender: 'women' })}
