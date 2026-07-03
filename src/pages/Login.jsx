@@ -213,6 +213,25 @@ export default function Login({ params, onPageChange }) {
                 placeholder="••••••••"
                 className="w-full bg-luxury-dark border border-white/10 rounded text-white text-xs p-3 focus:outline-none focus:border-luxury-gold"
               />
+              {authMode === 'register' && (
+                <div className="pt-1.5 space-y-1 text-[9px] text-gray-500 font-light">
+                  <p className="font-semibold tracking-wider text-[8px] uppercase text-luxury-gold/75">Guidelines:</p>
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+                    <span className={`flex items-center space-x-1 ${password.length >= 8 ? 'text-emerald-400/90' : 'text-gray-500'}`}>
+                      <span>• Min 8 chars</span>
+                    </span>
+                    <span className={`flex items-center space-x-1 ${/[A-Z]/.test(password) ? 'text-emerald-400/90' : 'text-gray-500'}`}>
+                      <span>• One uppercase</span>
+                    </span>
+                    <span className={`flex items-center space-x-1 ${/[a-z]/.test(password) ? 'text-emerald-400/90' : 'text-gray-500'}`}>
+                      <span>• One lowercase</span>
+                    </span>
+                    <span className={`flex items-center space-x-1 ${/[!@#$%^&*(),.?":{}|<>\-_]/.test(password) ? 'text-emerald-400/90' : 'text-gray-500'}`}>
+                      <span>• One special char</span>
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
