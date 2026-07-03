@@ -29,6 +29,7 @@ const ensureDb = async (req, res, next) => {
       console.log('Connecting to MongoDB via middleware...');
       await mongoose.connect(mongoURI);
       console.log('Connected to MongoDB');
+      dbConnectionError = null;
     }
     await seedDatabase();
     next();
@@ -282,6 +283,7 @@ const seedDatabase = async () => {
 mongoose.connect(mongoURI)
   .then(async () => {
     console.log('Successfully connected to MongoDB in background');
+    dbConnectionError = null;
     await seedDatabase();
   })
   .catch((err) => {
