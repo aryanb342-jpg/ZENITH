@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginUser, registerUser } from '../store/slices/watchSlice';
-import { Star, CheckCircle2 } from 'lucide-react';
+import { Star, CheckCircle2, ShieldCheck } from 'lucide-react';
 
 export default function Login({ params, onPageChange }) {
   const dispatch = useDispatch();
@@ -20,6 +20,7 @@ export default function Login({ params, onPageChange }) {
   // Status states
   const [errorMsg, setErrorMsg] = useState('');
   const [forgotSuccess, setForgotSuccess] = useState(false);
+  const [showPasswordPopup, setShowPasswordPopup] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,20 +45,13 @@ export default function Login({ params, onPageChange }) {
 
     if (authMode === 'register') {
       // Password complexity check
-      if (password.length < 8) {
-        setErrorMsg('Password must be at least 8 characters long.');
-        return;
-      }
-      if (!/[A-Z]/.test(password)) {
-        setErrorMsg('Password must contain at least one uppercase letter.');
-        return;
-      }
-      if (!/[a-z]/.test(password)) {
-        setErrorMsg('Password must contain at least one lowercase letter.');
-        return;
-      }
-      if (!/[!@#$%^&*(),.?":{}|<>\-_]/.test(password)) {
-        setErrorMsg('Password must contain at least one special character.');
+      const isStrong = password.length >= 8 &&
+                       /[A-Z]/.test(password) &&
+                       /[a-z]/.test(password) &&
+                       /[!@#$%^&*(),.?":{}|<>\-_]/.test(password);
+
+      if (!isStrong) {
+        setShowPasswordPopup(true);
         return;
       }
 
@@ -226,6 +220,72 @@ export default function Login({ params, onPageChange }) {
 
 
       </div>
+
+      {/* Password Requirements Popup Modal */}
+      {showPasswordPopup && (
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-luxury-gray border border-white/10 rounded-md p-6 max-w-sm w-full space-y-4 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center space-x-2 text-luxury-gold">
+              <ShieldCheck size={20} />
+              <h3 className="font-serif text-sm font-bold uppercase tracking-widest text-white">Password Requirements</h3>
+            </div>
+            
+            <p className="text-[10px] text-gray-400 font-light">
+              Your security is paramount. Please ensure your password meets all Zenith guidelines:
+            </p>
+
+            <ul className="space-y-2.5 text-xs">
+              <li className="flex items-center space-x-2">
+                <span className={`h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                  password.length >= 8 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                }`}>
+                  {password.length >= 8 ? '✓' : '✗'}
+                </span>
+                <span className={password.length >= 8 ? 'text-gray-200' : 'text-gray-500'}>
+                  Minimum 8 characters
+                </span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <span className={`h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                  /[A-Z]/.test(password) ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                }`}>
+                  {/[A-Z]/.test(password) ? '✓' : '✗'}
+                </span>
+                <span className={/[A-Z]/.test(password) ? 'text-gray-200' : 'text-gray-500'}>
+                  At least one uppercase letter (A-Z)
+                </span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <span className={`h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                  /[a-z]/.test(password) ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                }`}>
+                  {/[a-z]/.test(password) ? '✓' : '✗'}
+                </span>
+                <span className={/[a-z]/.test(password) ? 'text-gray-200' : 'text-gray-500'}>
+                  At least one lowercase letter (a-z)
+                </span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <span className={`h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                  /[!@#$%^&*(),.?":{}|<>\-_]/.test(password) ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                }`}>
+                  {/[!@#$%^&*(),.?":{}|<>\-_]/.test(password) ? '✓' : '✗'}
+                </span>
+                <span className={/[!@#$%^&*(),.?":{}|<>\-_]/.test(password) ? 'text-gray-200' : 'text-gray-500'}>
+                  At least one special character
+                </span>
+              </li>
+            </ul>
+
+            <button
+              onClick={() => setShowPasswordPopup(false)}
+              className="w-full mt-2 py-2.5 bg-white hover:bg-luxury-gold text-luxury-dark font-bold text-xs tracking-wider uppercase transition cursor-pointer"
+            >
+              Understand & Adjust
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
