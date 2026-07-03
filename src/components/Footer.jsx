@@ -23,7 +23,7 @@ export default function Footer({ onPageChange }) {
           {/* Logo & Manifesto */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2 text-white">
-              <Star className="text-luxury-gold" size={24} fill="var(--color-luxury-gold)" />
+              <Star className="text-[#0f4605]" size={24} fill="#0f4605" />
               <span className="font-serif text-2xl font-bold tracking-widest">KHRONIQ</span>
             </div>
             <p className="text-gray-400 text-xs leading-relaxed max-w-sm">
