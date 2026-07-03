@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../store/slices/watchSlice';
 import { ShoppingBag, Heart, Search, User, ShieldAlert, Menu, X, Star } from 'lucide-react';
@@ -17,7 +17,35 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Track scrolling for background transparency on homepage
+      if (currentScrollY > 80) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+
+      // Hide header on scroll down, show on scroll up
+      if (currentScrollY < 10) {
+        setVisible(true);
+      } else if (currentScrollY > lastScrollY) {
+        setVisible(false); // Scrolling down
+      } else {
+        setVisible(true); // Scrolling up
+      }
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   const handleSearchSubmit = (e) => {
@@ -47,9 +75,15 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
   };
 
   const isHome = currentPage === 'home';
-  const headerClass = isHome 
-    ? "absolute top-0 left-0 right-0 z-50 bg-transparent transition-all duration-300"
-    : "sticky top-0 z-50 bg-[#111111] transition-all duration-300";
+  const headerClass = `${
+    isHome ? 'fixed' : 'sticky'
+  } top-0 left-0 right-0 z-50 transition-all duration-300 transform ${
+    visible ? 'translate-y-0' : '-translate-y-full'
+  } ${
+    isHome 
+      ? (scrolled ? 'bg-black/95 backdrop-blur-md shadow-md' : 'bg-transparent')
+      : 'bg-[#111111] shadow-md'
+  }`;
 
   const textColorClass = "text-white hover:text-luxury-gold";
 
