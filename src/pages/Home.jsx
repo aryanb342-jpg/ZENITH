@@ -35,7 +35,7 @@ export default function Home({ onPageChange }) {
   ];
 
   return (
-    <div className="space-y-24 pb-12">
+    <div className="pb-12">
 
       {/* Hero Section - Excluded from light theme CSS overrides by using bg-[#1c1a17] */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden bg-[#1c1a17] border-b border-white/5">
