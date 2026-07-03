@@ -78,7 +78,7 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
                 key={idx}
                 onClick={() => handleNavLinkClick(link)}
                 className={`${textColorClass} transition duration-200 cursor-pointer ${
-                  currentPage === link.page ? (isHome ? 'text-luxury-gold' : 'text-luxury-gold-dark') : ''
+                  currentPage === link.page ? 'text-luxury-gold' : ''
                 }`}
               >
                 {link.label}
