@@ -35,7 +35,7 @@ export default function Home({ onPageChange }) {
   ];
 
   return (
-    <div className="pb-12">
+    <>
 
       {/* Hero Section - Excluded from light theme CSS overrides by using bg-[#1c1a17] */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden bg-[#1c1a17] border-b border-white/5">
@@ -113,95 +113,108 @@ export default function Home({ onPageChange }) {
         </div>
       </section>
 
-      {/* Men & Women Category Split Banner (Full width edge-to-edge, half-half split, no spacing/borders) */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-0 w-full overflow-hidden border-b border-white/5 mt-16">
-        {/* Women's Column */}
-        <div 
-          onClick={() => onPageChange('shop', { gender: 'women' })}
-          className="group relative h-[700px] flex flex-col justify-end p-8 sm:p-12 overflow-hidden cursor-pointer bg-luxury-gray"
-        >
-          <div className="absolute inset-0 z-0">
-            <div 
-              className="absolute inset-0 bg-cover bg-[position:center_12%] group-hover:scale-105 transition-transform duration-[2000ms]" 
-              style={{ backgroundImage: "url('/assets/women_watches.jpg')" }} 
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-white/10 to-transparent" />
-          </div>
-          
-          <div className="relative z-10 space-y-2 text-left">
-            <h3 className="font-serif text-3xl sm:text-4xl font-bold text-luxury-text tracking-wide uppercase">Women's watches</h3>
-            <button 
-              onClick={(e) => { e.stopPropagation(); onPageChange('shop', { gender: 'women' }); }}
-              className="text-luxury-text text-xs font-bold tracking-widest uppercase border-b-2 border-luxury-text pb-1 hover:text-luxury-gold hover:border-luxury-gold transition duration-300 w-fit inline-block"
-            >
-              Discover
-            </button>
-          </div>
+      {/* Shop By Gender - Full Width with Header, directly after hero with ZERO gap */}
+      <section className="w-full" style={{ margin: 0, padding: 0 }}>
+        {/* Section Header */}
+        <div className="text-center py-10" style={{ background: 'var(--color-luxury-bg, #faf8f5)' }}>
+          <p className="text-[10px] font-bold tracking-[0.25em] uppercase mb-3" style={{ color: 'var(--color-luxury-gold-dark, #8B6914)' }}>Curated For You</p>
+          <h2 className="font-serif text-3xl sm:text-4xl font-black tracking-wider uppercase" style={{ color: '#1c1a17' }}>Shop By Gender</h2>
+          <div className="w-10 h-[2px] mx-auto mt-4" style={{ background: 'var(--color-luxury-gold-dark, #8B6914)' }} />
         </div>
 
-        {/* Men's Column */}
-        <div 
-          onClick={() => onPageChange('shop', { gender: 'men' })}
-          className="group relative h-[700px] flex flex-col justify-end p-8 sm:p-12 overflow-hidden cursor-pointer bg-luxury-gray"
-        >
-          <div className="absolute inset-0 z-0">
-            <div 
-              className="absolute inset-0 bg-cover bg-[position:center_12%] group-hover:scale-105 transition-transform duration-[2000ms]" 
-              style={{ backgroundImage: "url('/assets/men_watches.jpg')" }} 
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-white/10 to-transparent" />
-          </div>
-          
-          <div className="relative z-10 space-y-2 text-left">
-            <h3 className="font-serif text-3xl sm:text-4xl font-bold text-luxury-text tracking-wide uppercase">Men's watches</h3>
-            <button 
-              onClick={(e) => { e.stopPropagation(); onPageChange('shop', { gender: 'men' }); }}
-              className="text-luxury-text text-xs font-bold tracking-widest uppercase border-b-2 border-luxury-text pb-1 hover:text-luxury-gold hover:border-luxury-gold transition duration-300 w-fit inline-block"
-            >
-              Discover
-            </button>
-          </div>
-        </div>
-      </section>
+        {/* Full-width image panels with navigation arrows */}
+        <div className="relative w-full overflow-hidden" style={{ margin: 0, padding: 0 }}>
+          {/* Left Arrow */}
+          <button
+            onClick={() => onPageChange('shop', { gender: 'men' })}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
+            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)', backdropFilter: 'blur(4px)' }}
+            aria-label="Men's Watches"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M9 2L4 7L9 12" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
 
-      {/* Collections Highlight Banner (Full width edge-to-edge layout, matching Featured) */}
-      <section className="w-full px-4 sm:px-8 lg:px-12 pt-36 pb-24 bg-transparent space-y-12">
-        <div className="text-center max-w-2xl mx-auto space-y-2">
-          <p className="text-[10px] text-luxury-gold-dark font-bold tracking-widest uppercase">The Pillars of Zenith</p>
-          <h2 className="text-3xl font-bold font-serif text-luxury-text tracking-wide uppercase">Explore Collections</h2>
-        </div>
+          {/* Right Arrow */}
+          <button
+            onClick={() => onPageChange('shop', { gender: 'women' })}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
+            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)', backdropFilter: 'blur(4px)' }}
+            aria-label="Women's Watches"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M5 2L10 7L5 12" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-          {collections.map((col, idx) => (
+          {/* Two-panel image grid */}
+          <div className="grid grid-cols-2 w-full" style={{ gap: 0 }}>
+            {/* Men's Panel */}
             <div
-              key={idx}
-              onClick={() => onPageChange('shop', col.filter)}
-              className="group relative h-[550px] border border-luxury-text/10 rounded-md overflow-hidden cursor-pointer flex flex-col justify-end p-10 sm:p-12 bg-white shadow-sm hover:shadow-md transition-all duration-300"
+              onClick={() => onPageChange('shop', { gender: 'men' })}
+              className="group relative overflow-hidden cursor-pointer"
+              style={{ height: '480px' }}
             >
-              {/* Product Background Image */}
-              <div className="absolute inset-0 z-0 opacity-100 transition duration-500 flex items-center justify-center p-0 bg-luxury-bg/30">
-                <img
-                  src={col.image}
-                  alt={col.name}
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-white via-white/30 to-transparent" />
-              </div>
+              <div
+                className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-[400ms]"
+                style={{ backgroundImage: "url('/assets/men_watches_beach.jpg')" }}
+              />
+              {/* Dark gradient at bottom for text legibility */}
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 40%, transparent 70%)' }} />
 
-              {/* Text Area */}
-              <div className="relative z-10 space-y-4">
-                <span className="text-xs sm:text-sm text-black font-extrabold tracking-widest uppercase">{col.tagline}</span>
-                <h3 className="text-3xl sm:text-4xl font-serif font-black text-black uppercase group-hover:text-luxury-gold-dark transition duration-200">{col.name}</h3>
-                <p className="text-black text-sm sm:text-base font-semibold leading-relaxed line-clamp-2">{col.desc}</p>
-                <div className="flex items-center space-x-2 text-black hover:text-luxury-gold-dark text-sm font-bold pt-2">
-                  <span>DISCOVER</span>
-                  <ArrowRight size={14} className="transform group-hover:translate-x-1 transition-transform" />
-                </div>
+              <div className="absolute bottom-0 left-0 p-8 z-10 space-y-2">
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.9)', textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
+                  Men's Watches
+                </h3>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onPageChange('shop', { gender: 'men' }); }}
+                  className="flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-all duration-300 group/btn"
+                  style={{ color: 'rgba(255,255,255,0.85)' }}
+                >
+                  <span className="border-b border-white/60 pb-0.5 group-hover/btn:border-white group-hover/btn:text-white transition-all">Discover</span>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="transform group-hover/btn:translate-x-1 transition-transform">
+                    <path d="M2 6H10M10 6L6.5 2.5M10 6L6.5 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
               </div>
             </div>
-          ))}
+
+            {/* Women's Panel */}
+            <div
+              onClick={() => onPageChange('shop', { gender: 'women' })}
+              className="group relative overflow-hidden cursor-pointer"
+              style={{ height: '480px' }}
+            >
+              <div
+                className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-[400ms]"
+                style={{ backgroundImage: "url('/assets/women_watches_beach.jpg')" }}
+              />
+              {/* Dark gradient at bottom for text legibility */}
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 40%, transparent 70%)' }} />
+
+              <div className="absolute bottom-0 left-0 p-8 z-10 space-y-2">
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.9)', textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
+                  Women's Watches
+                </h3>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onPageChange('shop', { gender: 'women' }); }}
+                  className="flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-all duration-300 group/btn"
+                  style={{ color: 'rgba(255,255,255,0.85)' }}
+                >
+                  <span className="border-b border-white/60 pb-0.5 group-hover/btn:border-white group-hover/btn:text-white transition-all">Discover</span>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="transform group-hover/btn:translate-x-1 transition-transform">
+                    <path d="M2 6H10M10 6L6.5 2.5M10 6L6.5 9.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
+
+      {/* Rest of page sections with standard spacing */}
+      <div className="space-y-24 pb-12">
 
       {/* Featured Collection Grid (Full width edge-to-edge layout, touching margins) */}
       <section className="w-full py-24 bg-transparent space-y-8">
@@ -223,7 +236,46 @@ export default function Home({ onPageChange }) {
       </section>
 
       {/* Wrapping the rest of the home sections to align them beautifully */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 mt-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
+
+      {/* Collections Highlight Banner (Tissot Grid Style) */}
+      <section className="space-y-12">
+        <div className="text-center max-w-2xl mx-auto space-y-2">
+          <p className="text-[10px] text-luxury-gold-dark font-bold tracking-widest uppercase">The Pillars of Zenith</p>
+          <h2 className="text-3xl font-bold font-serif text-luxury-text tracking-wide uppercase">Explore Collections</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {collections.map((col, idx) => (
+            <div
+              key={idx}
+              onClick={() => onPageChange('shop', col.filter)}
+              className="group relative h-[450px] border border-luxury-text/10 rounded-md overflow-hidden cursor-pointer flex flex-col justify-end p-8 bg-white shadow-sm hover:shadow-md transition-all duration-300"
+            >
+              {/* Product Background Image */}
+              <div className="absolute inset-0 z-0 opacity-80 group-hover:opacity-95 transition duration-500 flex items-center justify-center p-12 bg-luxury-bg/30">
+                <img
+                  src={col.image}
+                  alt={col.name}
+                  className="max-h-full max-w-full object-contain transform group-hover:scale-105 transition duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
+              </div>
+
+              {/* Text Area */}
+              <div className="relative z-10 space-y-3">
+                <span className="text-[9px] text-luxury-gold-dark font-bold tracking-widest uppercase">{col.tagline}</span>
+                <h3 className="text-2xl font-serif font-bold text-luxury-text uppercase group-hover:text-luxury-gold-dark transition duration-200">{col.name}</h3>
+                <p className="text-luxury-muted text-xs font-light leading-relaxed line-clamp-2">{col.desc}</p>
+                <div className="flex items-center space-x-2 text-luxury-gold-dark text-xs font-semibold pt-2">
+                  <span>DISCOVER</span>
+                  <ArrowRight size={12} className="transform group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* Brand Story & Manufacturing Section */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white border border-luxury-text/5 p-8 sm:p-16 rounded-md items-center shadow-sm">
@@ -266,6 +318,8 @@ export default function Home({ onPageChange }) {
 
       </div> {/* Closing standard alignment container */}
 
-    </div>
+      </div> {/* Closing space-y-24 pb-12 div */}
+
+    </>
   );
 }
