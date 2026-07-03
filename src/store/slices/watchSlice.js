@@ -191,7 +191,7 @@ export const loginUser = (email, password) => async (dispatch) => {
       dispatch(fetchOrders());
       return { success: true, role: data.user.role };
     } else {
-      return { success: false, message: data.message };
+      return { success: false, message: data.message, remainingSeconds: data.remainingSeconds };
     }
   } catch (error) {
     return { success: false, message: 'Login failed. Server error.' };

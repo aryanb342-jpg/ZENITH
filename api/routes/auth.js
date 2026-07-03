@@ -83,7 +83,8 @@ router.post('/login', async (req, res) => {
       const remainingSeconds = Math.ceil((user.lockUntil - Date.now()) / 1000);
       return res.status(423).json({
         success: false,
-        message: `Too many failed attempts. Account locked. Please try again in ${remainingSeconds} seconds.`
+        message: `Too many failed attempts. Account locked. Please try again in ${remainingSeconds} seconds.`,
+        remainingSeconds
       });
     }
 
@@ -99,7 +100,8 @@ router.post('/login', async (req, res) => {
         await user.save();
         return res.status(423).json({
           success: false,
-          message: 'Too many failed attempts. Account locked for 1 minute.'
+          message: 'Too many failed attempts. Account locked for 1 minute.',
+          remainingSeconds: 60
         });
       } else {
         await user.save();

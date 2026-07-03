@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginUser, registerUser } from '../store/slices/watchSlice';
 import { Star, CheckCircle2, ShieldCheck } from 'lucide-react';
@@ -21,6 +21,25 @@ export default function Login({ params, onPageChange }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [forgotSuccess, setForgotSuccess] = useState(false);
   const [showPasswordPopup, setShowPasswordPopup] = useState(false);
+  const [lockoutCountdown, setLockoutCountdown] = useState(0);
+
+  useEffect(() => {
+    if (lockoutCountdown <= 0) return;
+    setErrorMsg(`Too many failed attempts. Account locked. Please try again in ${lockoutCountdown} seconds.`);
+    const timer = setInterval(() => {
+      setLockoutCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setErrorMsg('');
+          return 0;
+        }
+        const nextVal = prev - 1;
+        setErrorMsg(`Too many failed attempts. Account locked. Please try again in ${nextVal} seconds.`);
+        return nextVal;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [lockoutCountdown]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -80,7 +99,11 @@ export default function Login({ params, onPageChange }) {
           onPageChange('profile');
         }
       } else {
-        setErrorMsg(res.message || 'Invalid login combination.');
+        if (res.remainingSeconds) {
+          setLockoutCountdown(res.remainingSeconds);
+        } else {
+          setErrorMsg(res.message || 'Invalid login combination.');
+        }
       }
     }
   };
@@ -195,12 +218,19 @@ export default function Login({ params, onPageChange }) {
 
           <button
             type="submit"
-            className="w-full py-3.5 bg-white text-luxury-dark font-bold text-xs tracking-widest uppercase hover:bg-luxury-gold hover:text-luxury-dark transition cursor-pointer"
+            disabled={lockoutCountdown > 0}
+            className={`w-full py-3.5 font-bold text-xs tracking-widest uppercase transition flex items-center justify-center space-x-1.5 ${
+              lockoutCountdown > 0 
+                ? 'bg-gray-700 text-gray-500 cursor-not-allowed border border-white/5' 
+                : 'bg-white text-luxury-dark hover:bg-luxury-gold hover:text-luxury-dark cursor-pointer'
+            }`}
           >
             {authMode === 'register' 
               ? 'Create Account' 
               : authMode === 'forgot'
               ? 'Request Reset Link'
+              : lockoutCountdown > 0
+              ? `Locked (${lockoutCountdown}s)`
               : 'Authenticate Credentials'
             }
           </button>
