@@ -18,11 +18,11 @@
   --color-luxury-gold: #c5a880;
   --color-luxury-gold-dark: #93744d;
   --color-luxury-red: #e10600; /* Signature Tissot Red */
-  --color-luxury-dark: #ffffff; /* White cards */
-  --color-luxury-bg: #f5efe6; /* Light warm sand/beige */
-  --color-luxury-gray: #eae2d5; /* Warm gray/concrete accent */
-  --color-luxury-text: #201e1b; /* Charcoal primary text */
-  --color-luxury-muted: #6e675f; /* Muted taupe/gray */
+  --color-luxury-dark: #ffffff;
+  --color-luxury-bg: #ffffff; /* Pure white background */
+  --color-luxury-gray: #f4f4f4; /* Neutral light gray */
+  --color-luxury-text: #111111; /* Clean black text */
+  --color-luxury-muted: #666666; /* Neutral muted gray */
   
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -38,9 +38,6 @@ body {
   color: var(--color-luxury-text);
   margin: 0;
   overflow-x: hidden;
-  /* Apply a very subtle background pattern/gradient matching the watch aesthetic */
-  background-image: radial-gradient(circle at 100% 100%, rgba(197, 168, 128, 0.05) 0%, transparent 40%),
-                    radial-gradient(circle at 0% 0%, rgba(234, 226, 213, 0.3) 0%, transparent 60%);
 }
 
 /* Custom Scrollbar */
@@ -64,17 +61,17 @@ body {
 
 /* Luxury Glassmorphism Utilities */
 .glass {
-  background: rgba(253, 251, 247, 0.85);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(32, 30, 27, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .glass-light {
   background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(32, 30, 27, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 /* Custom Animations */
