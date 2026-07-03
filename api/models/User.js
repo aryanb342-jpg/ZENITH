@@ -7,7 +7,20 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ['customer', 'admin'], default: 'customer' },
   loginAttempts: { type: Number, required: true, default: 0 },
-  lockUntil: { type: Date }
+  lockUntil: { type: Date },
+  cart: [{
+    productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+    quantity: { type: Number, required: true, default: 1 }
+  }],
+  wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+  shippingAddress: {
+    streetAddress: { type: String, default: '' },
+    city: { type: String, default: '' },
+    state: { type: String, default: '' },
+    postalCode: { type: String, default: '' },
+    country: { type: String, default: '' },
+    phone: { type: String, default: '' }
+  }
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

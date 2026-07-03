@@ -13,6 +13,8 @@ import authRoutes from './routes/auth.js';
 import productRoutes from './routes/products.js';
 import orderRoutes from './routes/orders.js';
 import couponRoutes from './routes/coupons.js';
+import cartRoutes from './routes/cart.js';
+import wishlistRoutes from './routes/wishlist.js';
 
 dotenv.config();
 
@@ -58,6 +60,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/coupons', couponRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 
 // Base Endpoint
 app.get('/api', (req, res) => {

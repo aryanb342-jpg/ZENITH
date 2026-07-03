@@ -152,11 +152,63 @@ router.get('/profile', protect, async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        shippingAddress: user.shippingAddress
       }
     });
   } catch (error) {
     console.error('Profile fetch error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// @route   PUT /api/auth/profile
+// @desc    Update user profile details and default shipping address
+// @access  Private
+router.put('/profile', protect, async (req, res) => {
+  const { name, email, shippingAddress } = req.body;
+
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (name) user.name = name;
+    if (email) {
+      const emailExists = await User.findOne({ email });
+      if (emailExists && emailExists._id.toString() !== user._id.toString()) {
+        return res.status(400).json({ success: false, message: 'Email address already in use.' });
+      }
+      user.email = email;
+    }
+
+    if (shippingAddress) {
+      user.shippingAddress = {
+        streetAddress: shippingAddress.streetAddress !== undefined ? shippingAddress.streetAddress : user.shippingAddress.streetAddress,
+        city: shippingAddress.city !== undefined ? shippingAddress.city : user.shippingAddress.city,
+        state: shippingAddress.state !== undefined ? shippingAddress.state : user.shippingAddress.state,
+        postalCode: shippingAddress.postalCode !== undefined ? shippingAddress.postalCode : user.shippingAddress.postalCode,
+        country: shippingAddress.country !== undefined ? shippingAddress.country : user.shippingAddress.country,
+        phone: shippingAddress.phone !== undefined ? shippingAddress.phone : user.shippingAddress.phone
+      };
+    }
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully.',
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        shippingAddress: user.shippingAddress
+      }
+    });
+  } catch (error) {
+    console.error('Profile update error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });

@@ -81,6 +81,12 @@ const watchSlice = createSlice({
     },
     setCouponsAction: (state, action) => {
       state.coupons = action.payload;
+    },
+    setCartAction: (state, action) => {
+      state.cart = action.payload;
+    },
+    setWishlistAction: (state, action) => {
+      state.wishlist = action.payload;
     }
   }
 });
@@ -95,7 +101,9 @@ export const {
   toggleWishlistAction,
   setProductsAction,
   setOrdersAction,
-  setCouponsAction
+  setCouponsAction,
+  setCartAction,
+  setWishlistAction
 } = watchSlice.actions;
 
 // Async Thunks using native fetch
@@ -137,6 +145,50 @@ export const fetchOrders = () => async (dispatch) => {
   }
 };
 
+export const fetchCartFromDb = () => async (dispatch) => {
+  try {
+    const res = await fetch('/api/cart', {
+      headers: getHeaders()
+    });
+    const data = await res.json();
+    if (data.success) {
+      dispatch(setCartAction(data.cart));
+    }
+  } catch (error) {
+    console.error('Failed to fetch cart from DB:', error);
+  }
+};
+
+export const syncCartWithDb = (guestCart) => async (dispatch) => {
+  try {
+    const res = await fetch('/api/cart/sync', {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ guestCart })
+    });
+    const data = await res.json();
+    if (data.success) {
+      dispatch(setCartAction(data.cart));
+    }
+  } catch (error) {
+    console.error('Failed to sync cart with DB:', error);
+  }
+};
+
+export const fetchWishlistFromDb = () => async (dispatch) => {
+  try {
+    const res = await fetch('/api/wishlist', {
+      headers: getHeaders()
+    });
+    const data = await res.json();
+    if (data.success) {
+      dispatch(setWishlistAction(data.wishlist));
+    }
+  } catch (error) {
+    console.error('Failed to fetch wishlist from DB:', error);
+  }
+};
+
 export const fetchUserProfile = () => async (dispatch) => {
   const token = localStorage.getItem('zenith_token');
   if (!token) return;
@@ -148,6 +200,8 @@ export const fetchUserProfile = () => async (dispatch) => {
     if (data.success) {
       dispatch(setCurrentUserAction(data.user));
       dispatch(fetchOrders());
+      dispatch(fetchCartFromDb());
+      dispatch(fetchWishlistFromDb());
     } else {
       localStorage.removeItem('zenith_token');
     }
@@ -157,7 +211,7 @@ export const fetchUserProfile = () => async (dispatch) => {
   }
 };
 
-export const registerUser = (name, email, password) => async (dispatch) => {
+export const registerUser = (name, email, password) => async (dispatch, getState) => {
   try {
     const res = await fetch('/api/auth/register', {
       method: 'POST',
@@ -168,6 +222,15 @@ export const registerUser = (name, email, password) => async (dispatch) => {
     if (data.success) {
       localStorage.setItem('zenith_token', data.token);
       dispatch(setCurrentUserAction(data.user));
+
+      const guestCart = getState().watch.cart;
+      if (guestCart && guestCart.length > 0) {
+        dispatch(syncCartWithDb(guestCart));
+      } else {
+        dispatch(fetchCartFromDb());
+      }
+      dispatch(fetchWishlistFromDb());
+
       return { success: true };
     } else {
       return { success: false, message: data.message };
@@ -177,7 +240,7 @@ export const registerUser = (name, email, password) => async (dispatch) => {
   }
 };
 
-export const loginUser = (email, password) => async (dispatch) => {
+export const loginUser = (email, password) => async (dispatch, getState) => {
   try {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
@@ -189,6 +252,15 @@ export const loginUser = (email, password) => async (dispatch) => {
       localStorage.setItem('zenith_token', data.token);
       dispatch(setCurrentUserAction(data.user));
       dispatch(fetchOrders());
+
+      const guestCart = getState().watch.cart;
+      if (guestCart && guestCart.length > 0) {
+        dispatch(syncCartWithDb(guestCart));
+      } else {
+        dispatch(fetchCartFromDb());
+      }
+      dispatch(fetchWishlistFromDb());
+
       return { success: true, role: data.user.role };
     } else {
       return { success: false, message: data.message, remainingSeconds: data.remainingSeconds };
@@ -203,8 +275,28 @@ export const logoutUser = () => (dispatch) => {
   dispatch(logoutUserAction());
 };
 
-export const addToCart = (productId, quantity = 1) => (dispatch, getState) => {
-  const { products, cart } = getState().watch;
+export const updateUserProfile = (name, email, shippingAddress) => async (dispatch) => {
+  try {
+    const res = await fetch('/api/auth/profile', {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ name, email, shippingAddress })
+    });
+    const data = await res.json();
+    if (data.success) {
+      dispatch(setCurrentUserAction(data.user));
+      return { success: true, message: data.message };
+    } else {
+      return { success: false, message: data.message };
+    }
+  } catch (error) {
+    console.error('Failed to update profile:', error);
+    return { success: false, message: 'Failed to update profile. Server error.' };
+  }
+};
+
+export const addToCart = (productId, quantity = 1) => async (dispatch, getState) => {
+  const { products, cart, currentUser } = getState().watch;
   const product = products.find(p => p.id === productId);
   if (!product) return { success: false, message: 'Product not found' };
 
@@ -215,17 +307,34 @@ export const addToCart = (productId, quantity = 1) => (dispatch, getState) => {
     return { success: false, message: `Only ${product.stock} items in stock.` };
   }
 
+  if (currentUser) {
+    try {
+      const res = await fetch('/api/cart/add', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ productId, quantity })
+      });
+      const data = await res.json();
+      if (data.success) {
+        dispatch(setCartAction(data.cart));
+        return { success: true, message: 'Added to Cart' };
+      }
+    } catch (error) {
+      console.error('Failed to add to database cart:', error);
+    }
+  }
+
   dispatch(addToCartAction({ productId, quantity, price: product.price }));
   return { success: true, message: 'Added to Cart' };
 };
 
-export const updateCartQty = (productId, qty) => (dispatch, getState) => {
-  const { products } = getState().watch;
+export const updateCartQty = (productId, qty) => async (dispatch, getState) => {
+  const { products, currentUser } = getState().watch;
   const product = products.find(p => p.id === productId);
   if (!product) return;
 
   if (qty <= 0) {
-    dispatch(removeFromCartAction(productId));
+    dispatch(removeFromCart(productId));
     return;
   }
 
@@ -234,14 +343,68 @@ export const updateCartQty = (productId, qty) => (dispatch, getState) => {
     qty = product.stock;
   }
 
+  if (currentUser) {
+    try {
+      const res = await fetch('/api/cart/update', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ productId, qty })
+      });
+      const data = await res.json();
+      if (data.success) {
+        dispatch(setCartAction(data.cart));
+        return;
+      }
+    } catch (error) {
+      console.error('Failed to update database cart qty:', error);
+    }
+  }
+
   dispatch(updateCartQtyAction({ productId, qty }));
 };
 
-export const removeFromCart = (productId) => (dispatch) => {
+export const removeFromCart = (productId) => async (dispatch, getState) => {
+  const { currentUser } = getState().watch;
+
+  if (currentUser) {
+    try {
+      const res = await fetch(`/api/cart/${productId}`, {
+        method: 'DELETE',
+        headers: getHeaders()
+      });
+      const data = await res.json();
+      if (data.success) {
+        dispatch(setCartAction(data.cart));
+        return;
+      }
+    } catch (error) {
+      console.error('Failed to remove from database cart:', error);
+    }
+  }
+
   dispatch(removeFromCartAction(productId));
 };
 
-export const toggleWishlist = (productId) => (dispatch) => {
+export const toggleWishlist = (productId) => async (dispatch, getState) => {
+  const { currentUser } = getState().watch;
+
+  if (currentUser) {
+    try {
+      const res = await fetch('/api/wishlist/toggle', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ productId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        dispatch(setWishlistAction(data.wishlist));
+        return;
+      }
+    } catch (error) {
+      console.error('Failed to toggle database wishlist:', error);
+    }
+  }
+
   dispatch(toggleWishlistAction(productId));
 };
 
@@ -284,6 +447,16 @@ export const placeOrder = (shippingDetails, paymentDetails, appliedCoupon) => as
     });
     const data = await res.json();
     if (data.success) {
+      if (currentUser) {
+        try {
+          await fetch('/api/cart/clear', {
+            method: 'POST',
+            headers: getHeaders()
+          });
+        } catch (err) {
+          console.error('Failed to clear database cart on checkout success:', err);
+        }
+      }
       dispatch(clearCartAction());
       dispatch(fetchProducts()); // Refresh stocks
       dispatch(fetchOrders());   // Refresh orders list

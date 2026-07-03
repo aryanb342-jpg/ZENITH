@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { logoutUser, cancelOrder } from '../store/slices/watchSlice';
+import { logoutUser, cancelOrder, updateUserProfile } from '../store/slices/watchSlice';
 import ProductCard from '../components/ProductCard';
 import { Heart, User, Package, LogOut } from 'lucide-react';
 
@@ -17,14 +17,32 @@ export default function Profile({ params, onPageChange }) {
   // Settings Form States
   const [profileName, setProfileName] = useState(currentUser?.name || '');
   const profileEmail = currentUser?.email || '';
+  const [streetAddress, setStreetAddress] = useState(currentUser?.shippingAddress?.streetAddress || '');
+  const [city, setCity] = useState(currentUser?.shippingAddress?.city || '');
+  const [stateVal, setStateVal] = useState(currentUser?.shippingAddress?.state || '');
+  const [postalCode, setPostalCode] = useState(currentUser?.shippingAddress?.postalCode || '');
+  const [country, setCountry] = useState(currentUser?.shippingAddress?.country || '');
+  const [phone, setPhone] = useState(currentUser?.shippingAddress?.phone || '');
   const [settingsMessage, setSettingsMessage] = useState('');
 
-  // Sync tab updates
+  // Sync tab and user profile updates
   useEffect(() => {
     if (params?.tab) {
       setActiveTab(params.tab);
     }
   }, [params]);
+
+  useEffect(() => {
+    if (currentUser) {
+      setProfileName(currentUser.name || '');
+      setStreetAddress(currentUser.shippingAddress?.streetAddress || '');
+      setCity(currentUser.shippingAddress?.city || '');
+      setStateVal(currentUser.shippingAddress?.state || '');
+      setPostalCode(currentUser.shippingAddress?.postalCode || '');
+      setCountry(currentUser.shippingAddress?.country || '');
+      setPhone(currentUser.shippingAddress?.phone || '');
+    }
+  }, [currentUser]);
 
   if (!currentUser) {
     return (
@@ -46,10 +64,25 @@ export default function Profile({ params, onPageChange }) {
   // Filter wishlist matching current user
   const wishlistedProducts = products.filter(p => wishlist.includes(p.id));
 
-  const handleSettingsSubmit = (e) => {
+  const handleSettingsSubmit = async (e) => {
     e.preventDefault();
-    // Simulate savings
-    setSettingsMessage('Settings saved successfully!');
+    setSettingsMessage('');
+    
+    const shippingAddress = {
+      streetAddress,
+      city,
+      state: stateVal,
+      postalCode,
+      country,
+      phone
+    };
+
+    const res = await dispatch(updateUserProfile(profileName, currentUser.email, shippingAddress));
+    if (res.success) {
+      setSettingsMessage('Settings and shipping address saved successfully!');
+    } else {
+      setSettingsMessage(res.message || 'Failed to update settings.');
+    }
     setTimeout(() => setSettingsMessage(''), 5000);
   };
 
@@ -291,6 +324,76 @@ export default function Profile({ params, onPageChange }) {
                     className="w-full bg-luxury-dark/50 border border-white/10 rounded text-gray-500 text-xs p-3 cursor-not-allowed focus:outline-none"
                   />
                   <span className="text-[9px] text-gray-500 block">Contact support to modify email bindings.</span>
+                </div>
+
+                <h2 className="text-sm font-bold uppercase tracking-widest text-white border-b border-white/5 pt-6 pb-3">Default Shipping Address</h2>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] text-gray-400 font-bold uppercase tracking-widest block">Street Address</label>
+                  <input
+                    type="text"
+                    value={streetAddress}
+                    onChange={(e) => setStreetAddress(e.target.value)}
+                    placeholder="123 Horology Lane"
+                    className="w-full bg-luxury-dark border border-white/10 rounded text-white text-xs p-3 focus:outline-none focus:border-luxury-gold"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-widest block">City</label>
+                    <input
+                      type="text"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      placeholder="Geneva"
+                      className="w-full bg-luxury-dark border border-white/10 rounded text-white text-xs p-3 focus:outline-none focus:border-luxury-gold"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-widest block">State / Region</label>
+                    <input
+                      type="text"
+                      value={stateVal}
+                      onChange={(e) => setStateVal(e.target.value)}
+                      placeholder="Geneva"
+                      className="w-full bg-luxury-dark border border-white/10 rounded text-white text-xs p-3 focus:outline-none focus:border-luxury-gold"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-widest block">Postal Code</label>
+                    <input
+                      type="text"
+                      value={postalCode}
+                      onChange={(e) => setPostalCode(e.target.value)}
+                      placeholder="1201"
+                      className="w-full bg-luxury-dark border border-white/10 rounded text-white text-xs p-3 focus:outline-none focus:border-luxury-gold"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] text-gray-400 font-bold uppercase tracking-widest block">Country</label>
+                    <input
+                      type="text"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      placeholder="Switzerland"
+                      className="w-full bg-luxury-dark border border-white/10 rounded text-white text-xs p-3 focus:outline-none focus:border-luxury-gold"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] text-gray-400 font-bold uppercase tracking-widest block">Phone Number</label>
+                  <input
+                    type="text"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+41 22 730 21 11"
+                    className="w-full bg-luxury-dark border border-white/10 rounded text-white text-xs p-3 focus:outline-none focus:border-luxury-gold"
+                  />
                 </div>
 
                 <button

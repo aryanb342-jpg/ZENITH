@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { placeOrder } from '../store/slices/watchSlice';
 import confetti from 'canvas-confetti';
@@ -16,10 +16,10 @@ export default function Checkout({ params, onPageChange }) {
   const [step, setStep] = useState(1); // 1: Shipping, 2: Payment, 3: Success
   const [shippingForm, setShippingForm] = useState({
     fullName: currentUser?.name || '',
-    streetAddress: '',
-    city: '',
-    zipCode: '',
-    country: 'United States'
+    streetAddress: currentUser?.shippingAddress?.streetAddress || '',
+    city: currentUser?.shippingAddress?.city || '',
+    zipCode: currentUser?.shippingAddress?.postalCode || '',
+    country: currentUser?.shippingAddress?.country || 'United States'
   });
   
   const [paymentMethod, setPaymentMethod] = useState('card'); // card | upi
@@ -31,6 +31,26 @@ export default function Checkout({ params, onPageChange }) {
   });
 
   const [orderReceipt, setOrderReceipt] = useState(null);
+
+  // Sync shipping details once current user profile is fetched/loaded
+  useEffect(() => {
+    if (currentUser) {
+      setShippingForm(prev => ({
+        ...prev,
+        fullName: prev.fullName || currentUser.name || '',
+        streetAddress: prev.streetAddress || currentUser.shippingAddress?.streetAddress || '',
+        city: prev.city || currentUser.shippingAddress?.city || '',
+        zipCode: prev.zipCode || currentUser.shippingAddress?.postalCode || '',
+        country: (prev.country === 'United States' || !prev.country) && currentUser.shippingAddress?.country 
+          ? currentUser.shippingAddress.country 
+          : prev.country
+      }));
+      setCardForm(prev => ({
+        ...prev,
+        cardName: prev.cardName || currentUser.name || ''
+      }));
+    }
+  }, [currentUser]);
 
   // Compute prices
   const cartItemsWithDetails = cart.map(item => {
