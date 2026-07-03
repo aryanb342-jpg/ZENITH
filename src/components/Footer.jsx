@@ -76,7 +76,7 @@ export default function Footer({ onPageChange }) {
           <div className="space-y-4">
             <h4 className="text-xs font-bold tracking-widest text-white uppercase">Collections</h4>
             <ul className="space-y-2 text-[11px] text-gray-400">
-              <li><button onClick={() => onPageChange('shop', { category: 'Chronomaster' })} className="hover:text-luxury-gold transition cursor-pointer">Chronomaster</button></li>
+              <li><button onClick={() => onPageChange('shop', { category: 'Khronomaster' })} className="hover:text-luxury-gold transition cursor-pointer">Khronomaster</button></li>
               <li><button onClick={() => onPageChange('shop', { category: 'Defy' })} className="hover:text-luxury-gold transition cursor-pointer">Defy</button></li>
               <li><button onClick={() => onPageChange('shop', { category: 'Heritage' })} className="hover:text-luxury-gold transition cursor-pointer">Heritage</button></li>
               <li><button onClick={() => onPageChange('shop', { category: 'Elite' })} className="hover:text-luxury-gold transition cursor-pointer">Elite</button></li>

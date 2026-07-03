@@ -87,6 +87,9 @@ app.get('/api/health', (req, res) => {
 // Database Seed Function
 const seedDatabase = async () => {
   try {
+    // Migration: Update existing products with category 'Chronomaster' to 'Khronomaster'
+    await Product.updateMany({ category: 'Chronomaster' }, { $set: { category: 'Khronomaster' } });
+
     // 1. Seed Products
     const productCount = await Product.countDocuments();
     if (productCount < 8) {
@@ -113,12 +116,12 @@ const seedDatabase = async () => {
           ]
         },
         {
-          name: 'Khroniq Chronomaster Black Edition',
+          name: 'Khroniq Khronomaster Black Edition',
           image: '/assets/media__1782899491297.jpg',
           brand: 'KHRONIQ',
           price: 4800,
           stock: 5,
-          category: 'Chronomaster',
+          category: 'Khronomaster',
           gender: 'men',
           description: 'High-precision luxury chronograph watch in matte black design with silver sub-dials and detailed tachymeter scale. Equipped with the legendary El Primero movement DNA.',
           specs: {
@@ -173,12 +176,12 @@ const seedDatabase = async () => {
           ]
         },
         {
-          name: 'Khroniq Chronomaster Open Heart',
+          name: 'Khroniq Khronomaster Open Heart',
           image: '/assets/media__1782899491297.jpg',
           brand: 'KHRONIQ',
           price: 5200,
           stock: 6,
-          category: 'Chronomaster',
+          category: 'Khronomaster',
           gender: 'men',
           description: 'An exquisite luxury timepiece featuring a dial opening revealing the high-frequency El Primero balance wheel. Crafted with a polished steel case.',
           specs: {

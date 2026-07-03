@@ -70,7 +70,7 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
     { label: 'MEN', page: 'shop', filter: { gender: 'men' } },
     { label: 'WOMEN', page: 'shop', filter: { gender: 'women' } },
     { label: 'SHOP ALL', page: 'shop' },
-    { label: 'CHRONOMASTER', page: 'shop', filter: { category: 'Chronomaster' } },
+    { label: 'KHRONOMASTER', page: 'shop', filter: { category: 'Khronomaster' } },
   ];
 
   const handleNavLinkClick = (link) => {

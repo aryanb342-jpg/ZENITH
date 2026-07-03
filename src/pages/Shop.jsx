@@ -41,7 +41,7 @@ export default function Shop({ onPageChange, filterParams }) {
   // Extract unique attribute lists for filters
   const movements = ['All', ...new Set(products.map(p => p.specs.movement))];
   const straps = ['All', ...new Set(products.map(p => p.specs.strap))];
-  const categories = ['All', 'Chronomaster', 'Defy', 'Heritage', 'Elite'];
+  const categories = ['All', 'Khronomaster', 'Defy', 'Heritage', 'Elite'];
 
   // Reset all filters
   const resetFilters = () => {

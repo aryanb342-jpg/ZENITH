@@ -31,7 +31,7 @@ export default function Admin({ onPageChange }) {
     name: '',
     price: '',
     stock: '',
-    category: 'Chronomaster',
+    category: 'Khronomaster',
     gender: 'unisex',
     description: '',
     image: '/assets/media__1782899491225.jpg', // default copy
@@ -104,7 +104,7 @@ export default function Admin({ onPageChange }) {
       alert('Product created successfully!');
       setShowAddForm(false);
       setNewProduct({
-        name: '', price: '', stock: '', category: 'Chronomaster', description: '',
+        name: '', price: '', stock: '', category: 'Khronomaster', description: '',
         image: '/assets/media__1782899491225.jpg',
         specs: { movement: 'Automatic', case: '40mm', strap: 'Leather', waterResistance: '50m', glass: 'Sapphire' }
       });
@@ -262,8 +262,8 @@ export default function Admin({ onPageChange }) {
                 <line x1="50" y1="190" x2="550" y2="190" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
                 <line x1="50" y1="40" x2="50" y2="190" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
 
-                {/* Bars - Mocking Category Sales: Chronomaster, Defy, Heritage, Elite */}
-                {/* Chronomaster: 190 to 60 */}
+                {/* Bars - Mocking Category Sales: Khronomaster, Defy, Heritage, Elite */}
+                {/* Khronomaster: 190 to 60 */}
                 <rect x="90" y="60" width="40" height="130" fill="var(--color-luxury-gold)" opacity="0.8" rx="2" className="hover:opacity-100 transition" />
                 {/* Defy: 190 to 90 */}
                 <rect x="210" y="90" width="40" height="100" fill="var(--color-luxury-red)" opacity="0.8" rx="2" className="hover:opacity-100 transition" />
@@ -279,7 +279,7 @@ export default function Admin({ onPageChange }) {
                 <text x="40" y="195" fill="rgba(255,255,255,0.4)" fontSize="9" textAnchor="end">$0</text>
 
                 {/* X-axis Labels */}
-                <text x="110" y="210" fill="rgba(255,255,255,0.6)" fontSize="9" textAnchor="middle">CHRONOMASTER</text>
+                <text x="110" y="210" fill="rgba(255,255,255,0.6)" fontSize="9" textAnchor="middle">KHRONOMASTER</text>
                 <text x="230" y="210" fill="rgba(255,255,255,0.6)" fontSize="9" textAnchor="middle">DEFY</text>
                 <text x="350" y="210" fill="rgba(255,255,255,0.6)" fontSize="9" textAnchor="middle">HERITAGE</text>
                 <text x="470" y="210" fill="rgba(255,255,255,0.6)" fontSize="9" textAnchor="middle">ELITE</text>
@@ -319,7 +319,7 @@ export default function Admin({ onPageChange }) {
                     value={newProduct.name}
                     onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
                     className="w-full bg-luxury-dark border border-white/10 rounded text-white text-xs p-2.5 focus:outline-none"
-                    placeholder="Khroniq Chronomaster Sport"
+                    placeholder="Khroniq Khronomaster Sport"
                   />
                 </div>
 
@@ -355,7 +355,7 @@ export default function Admin({ onPageChange }) {
                     onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
                     className="w-full bg-luxury-dark border border-white/10 rounded text-white text-xs p-2.5 focus:outline-none"
                   >
-                    <option value="Chronomaster">Chronomaster</option>
+                    <option value="Khronomaster">Khronomaster</option>
                     <option value="Defy">Defy</option>
                     <option value="Heritage">Heritage</option>
                     <option value="Elite">Elite</option>
@@ -463,7 +463,7 @@ export default function Admin({ onPageChange }) {
                       onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
                       className="w-full bg-luxury-dark border border-white/10 rounded text-white p-2.5"
                     >
-                      <option value="Chronomaster">Chronomaster</option>
+                      <option value="Khronomaster">Khronomaster</option>
                       <option value="Defy">Defy</option>
                       <option value="Heritage">Heritage</option>
                       <option value="Elite">Elite</option>

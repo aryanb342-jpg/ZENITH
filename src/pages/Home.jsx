@@ -12,11 +12,11 @@ export default function Home({ onPageChange }) {
 
   const collections = [
     {
-      name: 'Chronomaster',
+      name: 'Khronomaster',
       image: '/assets/media__1782899491297.jpg',
       tagline: 'High-Frequency Chronographs',
       desc: 'Powered by the legendary El Primero caliber, blending historical authenticity with modern design.',
-      filter: { category: 'Chronomaster' }
+      filter: { category: 'Khronomaster' }
     },
     {
       name: 'Defy',
@@ -103,10 +103,10 @@ export default function Home({ onPageChange }) {
                 Explore Timepieces
               </button>
               <button
-                onClick={() => onPageChange('shop', { category: 'Chronomaster' })}
+                onClick={() => onPageChange('shop', { category: 'Khronomaster' })}
                 className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white hover:text-luxury-dark text-xs font-bold tracking-widest uppercase transition duration-300 w-full sm:w-auto cursor-pointer"
               >
-                Chronomaster DNA
+                Khronomaster DNA
               </button>
             </motion.div>
           </div>
