@@ -1,11 +1,12 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addToCart, toggleWishlist } from '../store/slices/watchSlice';
+import { addToCart, toggleWishlist, selectCurrentCurrency, formatPrice } from '../store/slices/watchSlice';
 import { ShoppingBag, Heart, Star } from 'lucide-react';
 
 export default function ProductCard({ product, onPageChange }) {
   const dispatch = useDispatch();
   const wishlist = useSelector(state => state.watch.wishlist);
+  const currentCurrency = useSelector(selectCurrentCurrency);
   const isWishlisted = wishlist.includes(product.id);
 
   // Calculate average rating
@@ -82,7 +83,7 @@ export default function ProductCard({ product, onPageChange }) {
           </p>
         </div>
         <p className="text-luxury-text text-xs sm:text-sm font-semibold pt-1">
-          ${product.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          {formatPrice(product.price, currentCurrency)}
         </p>
       </div>
     </div>

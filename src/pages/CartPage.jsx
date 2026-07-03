@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateCartQty, removeFromCart } from '../store/slices/watchSlice';
+import { updateCartQty, removeFromCart, selectCurrentCurrency, formatPrice } from '../store/slices/watchSlice';
 import { ShoppingBag, Trash2, Plus, Minus, Tag, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export default function CartPage({ onPageChange }) {
@@ -9,6 +9,7 @@ export default function CartPage({ onPageChange }) {
   const products = useSelector(state => state.watch.products);
   const coupons = useSelector(state => state.watch.coupons);
   const currentUser = useSelector(state => state.watch.currentUser);
+  const currentCurrency = useSelector(selectCurrentCurrency);
 
   const [couponInput, setCouponInput] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -137,7 +138,7 @@ export default function CartPage({ onPageChange }) {
                 {/* Price (Column 2) */}
                 <div className="col-span-2 text-center flex md:block justify-between w-full md:w-auto border-t md:border-t-0 border-luxury-text/10 pt-2 md:pt-0">
                   <span className="md:hidden text-[10px] text-luxury-muted font-bold uppercase">Price</span>
-                  <span className="text-luxury-gold-dark text-xs font-semibold">${item.product.price.toLocaleString()}</span>
+                  <span className="text-luxury-gold-dark text-xs font-semibold">{formatPrice(item.product.price, currentCurrency)}</span>
                 </div>
 
                 {/* Quantity Controls (Column 2) */}
@@ -163,7 +164,7 @@ export default function CartPage({ onPageChange }) {
                 {/* Total (Column 2) */}
                 <div className="col-span-2 text-right flex md:block justify-between w-full md:w-auto border-t md:border-t-0 border-luxury-text/10 pt-2 md:pt-0">
                   <span className="md:hidden text-[10px] text-luxury-muted font-bold uppercase">Total</span>
-                  <span className="text-luxury-text text-xs font-bold">${(item.product.price * item.quantity).toLocaleString()}</span>
+                  <span className="text-luxury-text text-xs font-bold">{formatPrice(item.product.price * item.quantity, currentCurrency)}</span>
                 </div>
               </div>
             ))}
@@ -179,7 +180,7 @@ export default function CartPage({ onPageChange }) {
             <div className="space-y-4 text-xs">
               <div className="flex justify-between text-luxury-muted">
                 <span className="tracking-wide">Bag Subtotal</span>
-                <span className="font-semibold text-luxury-text">${subtotal.toLocaleString()}</span>
+                <span className="font-semibold text-luxury-text">{formatPrice(subtotal, currentCurrency)}</span>
               </div>
               
               {appliedCoupon && (
@@ -189,7 +190,7 @@ export default function CartPage({ onPageChange }) {
                     <span>Coupon ({appliedCoupon.code} - {appliedCoupon.discountPercent}%)</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span>-${discount.toLocaleString()}</span>
+                    <span>-{formatPrice(discount, currentCurrency)}</span>
                     <button 
                       onClick={handleRemoveCoupon} 
                       className="text-luxury-muted hover:text-luxury-text text-[10px] uppercase font-bold cursor-pointer"
@@ -207,7 +208,7 @@ export default function CartPage({ onPageChange }) {
 
               <div className="flex justify-between items-center text-sm font-bold text-luxury-text pt-2">
                 <span className="uppercase tracking-widest text-xs">Total Order Value</span>
-                <span className="text-lg font-extrabold text-luxury-gold-dark">${total.toLocaleString()}</span>
+                <span className="text-lg font-extrabold text-luxury-gold-dark">{formatPrice(total, currentCurrency)}</span>
               </div>
             </div>
 

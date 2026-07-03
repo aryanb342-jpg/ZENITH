@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addToCart, toggleWishlist, addReview } from '../store/slices/watchSlice';
+import { addToCart, toggleWishlist, addReview, selectCurrentCurrency, formatPrice } from '../store/slices/watchSlice';
 import ProductCard from '../components/ProductCard';
 import { Star, Shield, RefreshCw, Truck, Heart, ShoppingBag, Plus, Minus, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
@@ -9,6 +9,7 @@ export default function ProductDetail({ params, onPageChange }) {
   const products = useSelector(state => state.watch.products);
   const wishlist = useSelector(state => state.watch.wishlist);
   const currentUser = useSelector(state => state.watch.currentUser);
+  const currentCurrency = useSelector(selectCurrentCurrency);
 
   const productId = params?.id;
   const product = products.find(p => p.id === productId);
@@ -143,7 +144,7 @@ export default function ProductDetail({ params, onPageChange }) {
             </div>
           </div>
 
-          <p className="text-2xl font-bold text-luxury-text">${product.price.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-luxury-text">{formatPrice(product.price, currentCurrency)}</p>
           
           <p className="text-luxury-muted text-xs sm:text-sm leading-relaxed font-light">{product.description}</p>
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { placeOrder } from '../store/slices/watchSlice';
+import { placeOrder, selectCurrentCurrency, formatPrice } from '../store/slices/watchSlice';
 import confetti from 'canvas-confetti';
 import { CheckCircle2, CreditCard, Landmark, ArrowRight, ShieldCheck } from 'lucide-react';
 
@@ -9,6 +9,7 @@ export default function Checkout({ params, onPageChange }) {
   const cart = useSelector(state => state.watch.cart);
   const products = useSelector(state => state.watch.products);
   const currentUser = useSelector(state => state.watch.currentUser);
+  const currentCurrency = useSelector(selectCurrentCurrency);
   
   const appliedCoupon = params?.appliedCoupon || null;
 
@@ -382,14 +383,14 @@ export default function Checkout({ params, onPageChange }) {
               {orderReceipt.items.map((item, idx) => (
                 <div key={idx} className="flex justify-between items-center text-gray-300">
                   <span className="line-clamp-1">{item.name} (x{item.quantity})</span>
-                  <span className="font-semibold text-white">${(item.price * item.quantity).toLocaleString()}</span>
+                  <span className="font-semibold text-white">{formatPrice(item.price * item.quantity, currentCurrency)}</span>
                 </div>
               ))}
             </div>
 
             <div className="border-t border-white/5 pt-3 flex justify-between items-center font-bold text-white">
               <span className="uppercase tracking-widest text-[10px] text-gray-400">Total Charged</span>
-              <span className="text-sm font-extrabold text-luxury-gold">${orderReceipt.total.toLocaleString()}</span>
+              <span className="text-sm font-extrabold text-luxury-gold">{formatPrice(orderReceipt.total, currentCurrency)}</span>
             </div>
 
             <div className="border-t border-white/5 pt-3 space-y-1 font-light text-gray-400">
@@ -421,6 +422,7 @@ export default function Checkout({ params, onPageChange }) {
 
 // Sub-component for Order Summary
 function CheckoutSummary({ cartItems, subtotal, discount, total }) {
+  const currentCurrency = useSelector(selectCurrentCurrency);
   return (
     <div className="bg-luxury-gray border border-white/5 rounded-md p-6 space-y-4">
       <h3 className="text-xs font-bold tracking-widest text-white uppercase border-b border-white/5 pb-3">Bag Review</h3>
@@ -434,9 +436,9 @@ function CheckoutSummary({ cartItems, subtotal, discount, total }) {
             </div>
             <div className="flex-1 min-w-0">
               <h4 className="text-white text-xs font-semibold truncate uppercase tracking-wide">{item.product.name}</h4>
-              <p className="text-[10px] text-gray-500">Qty: {item.quantity} × ${item.product.price.toLocaleString()}</p>
+              <p className="text-[10px] text-gray-500">Qty: {item.quantity} × {formatPrice(item.product.price, currentCurrency)}</p>
             </div>
-            <span className="text-white text-xs font-bold">${(item.product.price * item.quantity).toLocaleString()}</span>
+            <span className="text-white text-xs font-bold">{formatPrice(item.product.price * item.quantity, currentCurrency)}</span>
           </div>
         ))}
       </div>
@@ -445,12 +447,12 @@ function CheckoutSummary({ cartItems, subtotal, discount, total }) {
       <div className="border-t border-white/5 pt-4 space-y-2 text-xs">
         <div className="flex justify-between text-gray-300">
           <span>Subtotal</span>
-          <span>${subtotal.toLocaleString()}</span>
+          <span>{formatPrice(subtotal, currentCurrency)}</span>
         </div>
         {discount > 0 && (
           <div className="flex justify-between text-emerald-400">
             <span>Coupon Discount</span>
-            <span>-${discount.toLocaleString()}</span>
+            <span>-{formatPrice(discount, currentCurrency)}</span>
           </div>
         )}
         <div className="flex justify-between text-gray-300">
@@ -459,7 +461,7 @@ function CheckoutSummary({ cartItems, subtotal, discount, total }) {
         </div>
         <div className="flex justify-between items-center text-sm font-bold text-white border-t border-white/5 pt-3">
           <span className="uppercase tracking-widest text-[10px]">Grand Total</span>
-          <span className="text-base text-luxury-gold font-extrabold">${total.toLocaleString()}</span>
+          <span className="text-base text-luxury-gold font-extrabold">{formatPrice(total, currentCurrency)}</span>
         </div>
       </div>
     </div>

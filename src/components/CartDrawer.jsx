@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateCartQty, removeFromCart } from '../store/slices/watchSlice';
+import { updateCartQty, removeFromCart, selectCurrentCurrency, formatPrice } from '../store/slices/watchSlice';
 import { X, Trash2, ShoppingBag, Plus, Minus, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -9,6 +9,7 @@ export default function CartDrawer({ isOpen, onClose, onPageChange }) {
   const cart = useSelector(state => state.watch.cart);
   const products = useSelector(state => state.watch.products);
   const currentUser = useSelector(state => state.watch.currentUser);
+  const currentCurrency = useSelector(selectCurrentCurrency);
 
   // Calculate prices
   const cartItemsWithDetails = cart.map(item => {
@@ -113,7 +114,7 @@ export default function CartDrawer({ isOpen, onClose, onPageChange }) {
                           </button>
                         </div>
                         <p className="text-luxury-gold-dark text-xs font-medium mt-1">
-                          ${item.product.price.toLocaleString()} each
+                          {formatPrice(item.product.price, currentCurrency)} each
                         </p>
                       </div>
 
@@ -139,7 +140,7 @@ export default function CartDrawer({ isOpen, onClose, onPageChange }) {
 
                         {/* Total Price for item */}
                         <p className="text-luxury-text text-sm font-bold">
-                          ${(item.product.price * item.quantity).toLocaleString()}
+                          {formatPrice(item.product.price * item.quantity, currentCurrency)}
                         </p>
                       </div>
                     </div>
@@ -153,7 +154,7 @@ export default function CartDrawer({ isOpen, onClose, onPageChange }) {
               <div className="p-6 border-t border-luxury-text/10 bg-luxury-bg/30 space-y-4">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-luxury-muted tracking-wider">Subtotal</span>
-                  <span className="text-luxury-text font-bold text-lg">${subtotal.toLocaleString()}</span>
+                  <span className="text-luxury-text font-bold text-lg">{formatPrice(subtotal, currentCurrency)}</span>
                 </div>
                 
                 <p className="text-luxury-muted text-[10px] leading-relaxed">
