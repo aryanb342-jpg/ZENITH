@@ -72,7 +72,7 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
           </div>
 
           {/* Left Navigation: Brand Links (Desktop) */}
-          <nav className="hidden md:flex space-x-8 text-xs font-semibold tracking-widest">
+          <nav className="hidden md:flex space-x-8 text-xs font-black tracking-widest">
             {navLinks.map((link, idx) => (
               <button
                 key={idx}
@@ -93,7 +93,7 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
               className={`flex items-center space-x-2 transition duration-300 cursor-pointer ${textColorClass}`}
             >
               <Star className={`${starTextClass} animate-pulse`} size={22} fill={starColor} />
-              <span className="font-serif text-2xl font-bold tracking-widest">KHRONIQ</span>
+              <span className="font-serif text-2xl font-black tracking-widest">KHRONIQ</span>
             </button>
           </div>
 
