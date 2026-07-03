@@ -72,7 +72,7 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
           </div>
 
           {/* Left Navigation: Brand Links (Desktop) */}
-          <nav className="hidden md:flex space-x-8 text-xs font-black tracking-widest">
+          <nav className="hidden md:flex space-x-8 text-sm lg:text-base font-black tracking-widest">
             {navLinks.map((link, idx) => (
               <button
                 key={idx}
@@ -92,8 +92,8 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
               onClick={() => onPageChange('home')} 
               className={`flex items-center space-x-2 transition duration-300 cursor-pointer ${textColorClass}`}
             >
-              <Star className={`${starTextClass} animate-pulse`} size={22} fill={starColor} />
-              <span className="font-serif text-2xl font-black tracking-widest">KHRONIQ</span>
+              <Star className={`${starTextClass} animate-pulse`} size={28} fill={starColor} />
+              <span className="font-serif text-3xl lg:text-4xl font-black tracking-widest">KHRONIQ</span>
             </button>
           </div>
 
@@ -128,7 +128,7 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
                   className="transition cursor-pointer hover:text-luxury-gold"
                   title="Search"
                 >
-                  <Search size={20} />
+                  <Search size={24} />
                 </button>
               )}
             </div>
@@ -142,11 +142,11 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
                   title={currentUser.role === 'admin' ? 'Admin Dashboard' : 'My Account'}
                 >
                   {currentUser.role === 'admin' ? (
-                    <ShieldAlert size={20} className="text-luxury-red" />
+                    <ShieldAlert size={24} className="text-luxury-red" />
                   ) : (
-                    <User size={20} />
+                    <User size={24} />
                   )}
-                  <span className="hidden lg:inline text-xs max-w-20 truncate font-medium">
+                  <span className="hidden lg:inline text-sm max-w-24 truncate font-bold">
                     {currentUser.name}
                   </span>
                 </button>
@@ -156,7 +156,7 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
                   className="transition cursor-pointer hover:text-luxury-gold"
                   title="Login"
                 >
-                  <User size={20} />
+                  <User size={24} />
                 </button>
               )}
             </div>
@@ -167,9 +167,9 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
               className="relative transition cursor-pointer hover:text-luxury-gold"
               title="Wishlist"
             >
-              <Heart size={20} />
+              <Heart size={24} />
               {wishlist.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-luxury-gold-dark text-white text-[9px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-luxury-gold-dark text-white text-[10px] font-black h-5 w-5 rounded-full flex items-center justify-center">
                   {wishlist.length}
                 </span>
               )}
@@ -181,9 +181,9 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
               className="relative transition cursor-pointer hover:text-luxury-gold"
               title="Shopping Cart"
             >
-              <ShoppingBag size={20} />
+              <ShoppingBag size={24} />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-luxury-red text-white text-[9px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-luxury-red text-white text-[10px] font-black h-5 w-5 rounded-full flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
