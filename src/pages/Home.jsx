@@ -7,8 +7,8 @@ import { Star, Award, Compass, ArrowRight } from 'lucide-react';
 export default function Home({ onPageChange }) {
   const products = useSelector(state => state.watch.products);
 
-  // Show first 4 products in the featured collection to match the 4-column Tissot layout
-  const featuredProducts = products.slice(0, 4);
+  // Show first 5 products in the featured collection to match the 5-column layout
+  const featuredProducts = products.slice(0, 5);
 
   const collections = [
     {
@@ -174,7 +174,7 @@ export default function Home({ onPageChange }) {
           <div className="w-12 h-[2px] bg-luxury-gold-dark mx-auto mt-4" />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full px-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full px-0">
           {featuredProducts.map((product) => (
             <ProductCard
               key={product.id}
