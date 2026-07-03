@@ -113,53 +113,61 @@ export default function Home({ onPageChange }) {
         </div>
       </section>
 
-      {/* Men & Women Category Split Banner (Full width edge-to-edge, half-half split, no spacing/borders) */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-0 w-full overflow-hidden border-b border-white/5 mt-16">
-        {/* Women's Column */}
-        <div 
-          onClick={() => onPageChange('shop', { gender: 'women' })}
-          className="group relative h-[700px] flex flex-col justify-end p-8 sm:p-12 overflow-hidden cursor-pointer bg-luxury-gray"
-        >
-          <div className="absolute inset-0 z-0">
-            <div 
-              className="absolute inset-0 bg-cover bg-[position:center_12%] group-hover:scale-105 transition-transform duration-[2000ms]" 
-              style={{ backgroundImage: "url('/assets/women_watches.jpg')" }} 
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-white/10 to-transparent" />
-          </div>
-          
-          <div className="relative z-10 space-y-2 text-left">
-            <h3 className="font-serif text-3xl sm:text-4xl font-bold text-luxury-text tracking-wide uppercase">Women's watches</h3>
-            <button 
-              onClick={(e) => { e.stopPropagation(); onPageChange('shop', { gender: 'women' }); }}
-              className="text-luxury-text text-xs font-bold tracking-widest uppercase border-b-2 border-luxury-text pb-1 hover:text-luxury-gold hover:border-luxury-gold transition duration-300 w-fit inline-block"
-            >
-              Discover
-            </button>
-          </div>
+      {/* Men & Women Category Split Banner — Full-width, edge-to-edge, no spacing */}
+      <section className="w-full overflow-hidden">
+        {/* Section Header */}
+        <div className="text-center py-12 bg-white">
+          <p className="text-[10px] text-luxury-gold-dark font-bold tracking-widest uppercase mb-3">CURATED FOR YOU</p>
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-luxury-text tracking-wide uppercase">Shop By Gender</h2>
+          <div className="w-10 h-[1px] bg-luxury-text/40 mx-auto mt-4" />
         </div>
 
-        {/* Men's Column */}
-        <div 
-          onClick={() => onPageChange('shop', { gender: 'men' })}
-          className="group relative h-[700px] flex flex-col justify-end p-8 sm:p-12 overflow-hidden cursor-pointer bg-luxury-gray"
-        >
-          <div className="absolute inset-0 z-0">
-            <div 
-              className="absolute inset-0 bg-cover bg-[position:center_12%] group-hover:scale-105 transition-transform duration-[2000ms]" 
-              style={{ backgroundImage: "url('/assets/men_watches.jpg')" }} 
+        {/* Split Image Panels — zero gap, edge-to-edge */}
+        <div className="grid grid-cols-1 md:grid-cols-2">
+          {/* Men's Column */}
+          <div
+            onClick={() => onPageChange('shop', { gender: 'men' })}
+            className="dark-panel group relative h-[580px] overflow-hidden cursor-pointer"
+          >
+            <div
+              className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-[2000ms]"
+              style={{ backgroundImage: "url('/assets/men_watches_beach.jpg')" }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-white/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+            <div className="absolute bottom-0 left-0 p-8 sm:p-12 space-y-3 z-10">
+              <h3 className="font-serif text-3xl sm:text-4xl font-bold text-white tracking-wide uppercase drop-shadow-md">
+                Men's Watches
+              </h3>
+              <button
+                onClick={(e) => { e.stopPropagation(); onPageChange('shop', { gender: 'men' }); }}
+                className="flex items-center gap-2 text-white text-xs font-bold tracking-widest uppercase border-b border-white/60 pb-1 hover:border-white hover:gap-3 transition-all duration-300 w-fit"
+              >
+                Discover <ArrowRight size={12} />
+              </button>
+            </div>
           </div>
-          
-          <div className="relative z-10 space-y-2 text-left">
-            <h3 className="font-serif text-3xl sm:text-4xl font-bold text-luxury-text tracking-wide uppercase">Men's watches</h3>
-            <button 
-              onClick={(e) => { e.stopPropagation(); onPageChange('shop', { gender: 'men' }); }}
-              className="text-luxury-text text-xs font-bold tracking-widest uppercase border-b-2 border-luxury-text pb-1 hover:text-luxury-gold hover:border-luxury-gold transition duration-300 w-fit inline-block"
-            >
-              Discover
-            </button>
+
+          {/* Women's Column */}
+          <div
+            onClick={() => onPageChange('shop', { gender: 'women' })}
+            className="dark-panel group relative h-[580px] overflow-hidden cursor-pointer"
+          >
+            <div
+              className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-[2000ms]"
+              style={{ backgroundImage: "url('/assets/women_watches_beach.jpg')" }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+            <div className="absolute bottom-0 left-0 p-8 sm:p-12 space-y-3 z-10">
+              <h3 className="font-serif text-3xl sm:text-4xl font-bold text-white tracking-wide uppercase drop-shadow-md">
+                Women's Watches
+              </h3>
+              <button
+                onClick={(e) => { e.stopPropagation(); onPageChange('shop', { gender: 'women' }); }}
+                className="flex items-center gap-2 text-white text-xs font-bold tracking-widest uppercase border-b border-white/60 pb-1 hover:border-white hover:gap-3 transition-all duration-300 w-fit"
+              >
+                Discover <ArrowRight size={12} />
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -204,7 +212,7 @@ export default function Home({ onPageChange }) {
                 </button>
               </div>
             </div>
-          </div>
+          ))}
         </div>
       </section>
 

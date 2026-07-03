@@ -116,19 +116,19 @@ html {
    ========================================================================== */
 
 /* Overrides for text-white and text-gray classes to adapt them to light layouts */
-.text-white:not(button *, .bg-luxury-red *, .bg-red-700 *, .bg-red-800 *, .bg-\[\#1c1a17\] *, footer *, .bg-gradient-to-r *, .text-emerald-400 *, .font-mono *) {
+.text-white:not(button *, .bg-luxury-red *, .bg-red-700 *, .bg-red-800 *, .bg-\[\#1c1a17\] *, footer *, .bg-gradient-to-r *, .text-emerald-400 *, .font-mono *, .dark-panel *) {
   color: var(--color-luxury-text) !important;
 }
 
-.text-gray-300:not(footer *, .bg-\[\#1c1a17\] *, button *, .bg-luxury-red *, .bg-red-700 *, .bg-red-800 *, .bg-black\/30 *, .bg-black\/35 *, .bg-gradient-to-r *) {
+.text-gray-300:not(footer *, .bg-\[\#1c1a17\] *, button *, .bg-luxury-red *, .bg-red-700 *, .bg-red-800 *, .bg-black\/30 *, .bg-black\/35 *, .bg-gradient-to-r *, .dark-panel *) {
   color: var(--color-luxury-muted) !important;
 }
 
-.text-gray-400:not(footer *, .bg-\[\#1c1a17\] *, button *, .bg-luxury-red *, .bg-red-700 *, .bg-red-800 *, .bg-black\/30 *, .bg-black\/35 *, .absolute.top-3.left-3 *, .bg-gradient-to-r *) {
+.text-gray-400:not(footer *, .bg-\[\#1c1a17\] *, button *, .bg-luxury-red *, .bg-red-700 *, .bg-red-800 *, .bg-black\/30 *, .bg-black\/35 *, .absolute.top-3.left-3 *, .bg-gradient-to-r *, .dark-panel *) {
   color: var(--color-luxury-muted) !important;
 }
 
-.text-gray-500:not(footer *, .bg-\[\#1c1a17\] *, button *, .bg-luxury-red *, .bg-red-700 *, .bg-red-800 *) {
+.text-gray-500:not(footer *, .bg-\[\#1c1a17\] *, button *, .bg-luxury-red *, .bg-red-700 *, .bg-red-800 *, .dark-panel *) {
   color: rgba(32, 30, 27, 0.6) !important;
 }
 
