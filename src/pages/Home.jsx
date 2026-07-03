@@ -38,24 +38,33 @@ export default function Home({ onPageChange }) {
     <div className="space-y-24 pb-12">
 
       {/* Hero Section */}
-      <section className="relative h-[80vh] flex items-center justify-center -mx-4 sm:-mx-6 lg:-mx-8 overflow-hidden bg-luxury-gray border-b border-luxury-gray">
+      <section className="relative h-screen flex items-center justify-center -mx-4 sm:-mx-6 lg:-mx-8 overflow-hidden bg-black border-b border-white/5">
+        {/* Fullscreen Video Background */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-cover bg-center filter brightness-85 contrast-105" style={{ backgroundImage: "url('/assets/media__1782899491320.jpg')" }} />
-          {/* Adjusted overlays: higher visibility for the watch image, lower brightness/glare */}
-          <div className="absolute inset-0 bg-gradient-to-r from-luxury-bg/95 via-luxury-bg/40 to-transparent sm:block hidden" />
-          <div className="absolute inset-0 bg-luxury-bg/50 sm:hidden block" />
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="object-cover w-full h-full filter brightness-50 contrast-105"
+          >
+            <source src="/assets/background.mp4" type="video/mp4" />
+            Your browser does not support HTML5 video.
+          </video>
+          {/* Subtle vignette/shading overlays */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/60" />
         </div>
 
         <div className="relative z-10 text-center sm:text-left px-4 max-w-7xl w-full mx-auto grid grid-cols-1 sm:grid-cols-12 gap-8 items-center">
-          <div className="col-span-1 sm:col-span-7 space-y-6">
+          <div className="col-span-1 sm:col-span-8 space-y-6">
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               className="flex justify-center sm:justify-start"
             >
-              <span className="flex items-center space-x-2 border border-luxury-gold-dark/45 text-luxury-gold-dark px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase bg-white/40 backdrop-blur-sm">
-                <Star size={10} fill="var(--color-luxury-gold-dark)" className="animate-spin" style={{ animationDuration: '6s' }} />
+              <span className="flex items-center space-x-2 border border-luxury-gold/45 text-luxury-gold px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase bg-black/40 backdrop-blur-sm">
+                <Star size={10} fill="var(--color-luxury-gold)" className="animate-spin" style={{ animationDuration: '6s' }} />
                 <span>THE SWISS WATCH MANUFACTURE SINCE 1865</span>
               </span>
             </motion.div>
@@ -64,10 +73,10 @@ export default function Home({ onPageChange }) {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold tracking-wider text-luxury-text leading-tight uppercase"
+              className="font-serif text-4xl sm:text-5xl md:text-7xl font-bold tracking-wider text-white leading-tight uppercase"
             >
               Time to Reach <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-luxury-gold-dark via-yellow-700 to-luxury-gold-dark">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-luxury-gold via-yellow-400 to-luxury-gold">
                 Your Star
               </span>
             </motion.h1>
@@ -76,7 +85,7 @@ export default function Home({ onPageChange }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-luxury-muted text-sm sm:text-base max-w-xl font-light tracking-wide leading-relaxed"
+              className="text-gray-200 text-sm sm:text-base max-w-xl font-light tracking-wide leading-relaxed"
             >
               Zenith exists to inspire those who strive towards their dreams, offering unmatched horological mastery and mechanical innovation.
             </motion.p>
@@ -89,13 +98,13 @@ export default function Home({ onPageChange }) {
             >
               <button
                 onClick={() => onPageChange('shop')}
-                className="px-8 py-4 bg-luxury-gold-dark text-white text-xs font-bold tracking-widest uppercase hover:bg-luxury-gold transition duration-300 w-full sm:w-auto cursor-pointer shadow-md shadow-luxury-gold-dark/20"
+                className="px-8 py-4 bg-luxury-gold-dark text-white text-xs font-bold tracking-widest uppercase hover:bg-luxury-gold transition duration-300 w-full sm:w-auto cursor-pointer shadow-md shadow-luxury-gold-dark/20 border border-luxury-gold-dark"
               >
                 Explore Timepieces
               </button>
               <button
                 onClick={() => onPageChange('shop', { category: 'Chronomaster' })}
-                className="px-8 py-4 bg-white/60 backdrop-blur-sm border border-luxury-text/20 text-luxury-text hover:bg-luxury-text hover:text-white text-xs font-bold tracking-widest uppercase transition duration-300 w-full sm:w-auto cursor-pointer"
+                className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white hover:text-luxury-dark text-xs font-bold tracking-widest uppercase transition duration-300 w-full sm:w-auto cursor-pointer"
               >
                 Chronomaster DNA
               </button>
