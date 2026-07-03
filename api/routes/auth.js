@@ -64,11 +64,43 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
+    // Check if account is currently locked
+    if (user.lockUntil && user.lockUntil > Date.now()) {
+      const remainingSeconds = Math.ceil((user.lockUntil - Date.now()) / 1000);
+      return res.status(423).json({
+        success: false,
+        message: `Too many failed attempts. Account locked. Please try again in ${remainingSeconds} seconds.`
+      });
+    }
+
     const isMatch = await user.comparePassword(password);
 
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: 'Invalid email or password' });
+      // Increment login attempts
+      user.loginAttempts += 1;
+      
+      if (user.loginAttempts >= 5) {
+        user.lockUntil = new Date(Date.now() + 60 * 1000); // 1 minute lockout
+        user.loginAttempts = 0; // Reset attempts after locking
+        await user.save();
+        return res.status(423).json({
+          success: false,
+          message: 'Too many failed attempts. Account locked for 1 minute.'
+        });
+      } else {
+        await user.save();
+        const attemptsRemaining = 5 - user.loginAttempts;
+        return res.status(401).json({
+          success: false,
+          message: `Invalid email or password. ${attemptsRemaining} attempts remaining.`
+        });
+      }
     }
+
+    // Reset login attempts on successful login
+    user.loginAttempts = 0;
+    user.lockUntil = null;
+    await user.save();
 
     const token = generateToken(user);
 

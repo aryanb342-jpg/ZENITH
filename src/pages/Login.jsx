@@ -21,7 +21,7 @@ export default function Login({ params, onPageChange }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [forgotSuccess, setForgotSuccess] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
     setForgotSuccess(false);
@@ -43,15 +43,19 @@ export default function Login({ params, onPageChange }) {
     }
 
     if (authMode === 'register') {
-      dispatch(registerUser(name, email, password));
-      // Redirect
-      if (redirectPage === 'checkout') {
-        onPageChange('checkout', { appliedCoupon });
+      const res = await dispatch(registerUser(name, email, password));
+      if (res.success) {
+        // Auto-signed in on success, redirect
+        if (redirectPage === 'checkout') {
+          onPageChange('checkout', { appliedCoupon });
+        } else {
+          onPageChange('profile');
+        }
       } else {
-        onPageChange('profile');
+        setErrorMsg(res.message || 'Registration failed.');
       }
     } else {
-      const res = dispatch(loginUser(email, password));
+      const res = await dispatch(loginUser(email, password));
       if (res.success) {
         if (res.role === 'admin') {
           onPageChange('admin');
@@ -64,7 +68,7 @@ export default function Login({ params, onPageChange }) {
           onPageChange('profile');
         }
       } else {
-        setErrorMsg('Invalid login combination.');
+        setErrorMsg(res.message || 'Invalid login combination.');
       }
     }
   };
