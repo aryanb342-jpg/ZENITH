@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { logoutUser } from '../store/slices/watchSlice';
+import { logoutUser, setCurrencyAction, selectCurrentCurrency } from '../store/slices/watchSlice';
 import { ShoppingBag, Heart, Search, User, ShieldAlert, Menu, X, Star } from 'lucide-react';
 
 export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
@@ -20,6 +20,14 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
   const [visible, setVisible] = useState(true);
   const [scrolled, setScrolled] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const currentCurrency = useSelector(selectCurrentCurrency);
+  const [currencyOpen, setCurrencyOpen] = useState(false);
+
+  const currencyMap = {
+    INR: { symbol: '₹', label: 'Indian Currency (Rupees)' },
+    USD: { symbol: '$', label: 'US Currency (Dollar)' },
+    EUR: { symbol: '€', label: 'British Currency (Euro)' }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -208,6 +216,36 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
                 </span>
               )}
             </button>
+
+            {/* Currency Selector Dropdown */}
+            <div className="relative">
+              <button 
+                onClick={() => setCurrencyOpen(!currencyOpen)}
+                className="flex items-center justify-center w-10 h-10 rounded-full border border-white/20 hover:border-luxury-gold hover:text-luxury-gold transition cursor-pointer text-lg font-black"
+                title="Select Currency"
+              >
+                {currencyMap[currentCurrency]?.symbol || '$'}
+              </button>
+              {currencyOpen && (
+                <div className="absolute right-0 mt-2.5 w-52 bg-[#111111] border border-white/10 rounded shadow-xl py-2 z-50 text-xs text-white font-bold">
+                  {Object.entries(currencyMap).map(([code, details]) => (
+                    <button
+                      key={code}
+                      onClick={() => {
+                        dispatch(setCurrencyAction(code));
+                        setCurrencyOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-2.5 hover:bg-white/15 transition cursor-pointer flex justify-between items-center ${
+                        currentCurrency === code ? 'text-luxury-gold' : ''
+                      }`}
+                    >
+                      <span>{details.label}</span>
+                      {currentCurrency === code && <span className="text-luxury-gold">✓</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Cart Icon */}
             <button 

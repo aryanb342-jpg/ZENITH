@@ -16,7 +16,8 @@ const initialState = {
   wishlist: loadSaved('khroniq_wishlist', []),
   orders: [],
   coupons: [],
-  currentUser: null
+  currentUser: null,
+  currentCurrency: loadSaved('khroniq_currency', 'USD')
 };
 
 // Helper for standard API headers
@@ -87,6 +88,10 @@ const watchSlice = createSlice({
     },
     setWishlistAction: (state, action) => {
       state.wishlist = action.payload;
+    },
+    setCurrencyAction: (state, action) => {
+      state.currentCurrency = action.payload;
+      localStorage.setItem('khroniq_currency', action.payload);
     }
   }
 });
@@ -103,8 +108,21 @@ export const {
   setOrdersAction,
   setCouponsAction,
   setCartAction,
-  setWishlistAction
+  setWishlistAction,
+  setCurrencyAction
 } = watchSlice.actions;
+
+export const selectCurrentCurrency = state => state.watch.currentCurrency || 'USD';
+
+export const formatPrice = (price, currency) => {
+  const numPrice = Number(price) || 0;
+  if (currency === 'INR') {
+    return `₹ ${(numPrice * 83).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+  } else if (currency === 'EUR') {
+    return `€ ${(numPrice * 0.92).toLocaleString('en-GB', { maximumFractionDigits: 0 })}`;
+  }
+  return `$ ${numPrice.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+};
 
 // Async Thunks using native fetch
 export const fetchProducts = () => async (dispatch) => {
