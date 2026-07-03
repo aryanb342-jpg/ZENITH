@@ -18,9 +18,35 @@ dotenv.config();
 
 const app = express();
 
+// Database Connection Status Variables
+let isSeeded = false;
+let dbConnectionError = null;
+const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/zenith-watches';
+
+// Middleware to ensure DB connection and seeding
+const ensureDb = async (req, res, next) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      console.log('Connecting to MongoDB via middleware...');
+      await mongoose.connect(mongoURI);
+      console.log('Connected to MongoDB');
+    }
+    if (!isSeeded) {
+      await seedDatabase();
+      isSeeded = true;
+    }
+    next();
+  } catch (err) {
+    console.error('ensureDb connection error:', err);
+    dbConnectionError = err.message || err.toString();
+    next();
+  }
+};
+
 // Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(ensureDb);
 
 // Vercel Serverless Routing URL Restorer
 app.use((req, res, next) => {
@@ -253,16 +279,15 @@ const seedDatabase = async () => {
   }
 };
 
-// Database Connection
-let dbConnectionError = null;
-const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/zenith-watches';
+// Non-blocking background database connection startup
 mongoose.connect(mongoURI)
   .then(async () => {
-    console.log('Successfully connected to MongoDB');
+    console.log('Successfully connected to MongoDB in background');
     await seedDatabase();
+    isSeeded = true;
   })
   .catch((err) => {
-    console.error('MongoDB connection error:', err);
+    console.error('MongoDB background connection error:', err);
     dbConnectionError = err.message || err.toString();
   });
 
