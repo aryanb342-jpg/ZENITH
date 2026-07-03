@@ -254,12 +254,12 @@ export default function Home({ onPageChange }) {
           </div>
         </div>
 
-        <div className="h-96 bg-luxury-bg/50 border border-luxury-text/5 rounded-md flex items-center justify-center p-12 overflow-hidden relative">
+        <div className="h-96 bg-luxury-bg/50 border border-luxury-text/5 rounded-md overflow-hidden relative p-0">
           <Compass className="absolute text-luxury-gold-dark/5 w-80 h-80 -right-20 -bottom-20 rotate-12" />
           <img
             src="/assets/media__1782899491320.jpg"
             alt="Zenith Manufacturing"
-            className="max-h-full max-w-full object-contain relative z-10 filter drop-shadow-[0_10px_20px_rgba(43,40,36,0.12)]"
+            className="w-full h-full object-cover relative z-10"
           />
         </div>
       </section>
