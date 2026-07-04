@@ -424,7 +424,7 @@ export default function Home({ onPageChange }) {
 
   useEffect(() => {
     if (products.length <= visibleCards) return;
-    const timer = setInterval(nextSlide, 2500);
+    const timer = setInterval(nextSlide, 1600);
     return () => clearInterval(timer);
   }, [nextSlide, visibleCards, products.length, currentIndex]);
 
