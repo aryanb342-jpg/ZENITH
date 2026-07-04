@@ -7,12 +7,15 @@ import {
   deleteProduct, 
   addCoupon, 
   deleteCoupon, 
-  moderateReview 
+  moderateReview,
+  selectCurrentCurrency,
+  formatPrice,
+  logoutUser
 } from '../store/slices/watchSlice';
 import { 
   BarChart3, Plus, Edit, Trash2, Check, X, Tag, Star, 
   Package, AlertTriangle, ShieldAlert, ArrowLeft, ArrowUpRight,
-  CheckCircle2
+  CheckCircle2, LogOut
 } from 'lucide-react';
 
 export default function Admin({ onPageChange }) {
@@ -21,6 +24,7 @@ export default function Admin({ onPageChange }) {
   const orders = useSelector(state => state.watch.orders);
   const coupons = useSelector(state => state.watch.coupons);
   const currentUser = useSelector(state => state.watch.currentUser);
+  const currentCurrency = useSelector(selectCurrentCurrency);
 
   // Active Admin Sub-Tab
   const [activeTab, setActiveTab] = useState('analytics'); // analytics | products | orders | coupons | reviews
@@ -78,12 +82,12 @@ export default function Admin({ onPageChange }) {
   const outOfStockCount = products.filter(p => p.stock === 0).length;
   const totalSubscribersMock = 148;
 
-  // Compile all pending reviews for moderation
-  const pendingReviews = [];
+  // Compile all active (approved) reviews for management
+  const activeReviews = [];
   products.forEach(p => {
     p.reviews?.forEach(r => {
-      if (r.status === 'pending') {
-        pendingReviews.push({
+      if (r.status === 'approved') {
+        activeReviews.push({
           productId: p.id,
           productName: p.name,
           review: r
@@ -160,13 +164,26 @@ export default function Admin({ onPageChange }) {
           <p className="text-gray-400 text-xs mt-1">Configure Khroniq store parameters, monitor sales trends, and verify stock thresholds.</p>
         </div>
         
-        <button
-          onClick={() => onPageChange('home')}
-          className="px-4 py-2 border border-white/10 text-gray-300 hover:text-white text-xs font-semibold uppercase tracking-wider flex items-center space-x-1.5 transition cursor-pointer"
-        >
-          <ArrowLeft size={12} />
-          <span>Exit Dashboard</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => onPageChange('home')}
+            className="px-4 py-2 border border-white/10 text-gray-300 hover:text-white text-xs font-semibold uppercase tracking-wider flex items-center space-x-1.5 transition cursor-pointer"
+          >
+            <ArrowLeft size={12} />
+            <span>Exit Dashboard</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              dispatch(logoutUser());
+              onPageChange('home');
+            }}
+            className="px-4 py-2 bg-luxury-red hover:bg-red-600 text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 transition cursor-pointer rounded-sm"
+          >
+            <LogOut size={12} />
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
 
       {/* Admin Tab Selectors */}
@@ -176,7 +193,7 @@ export default function Admin({ onPageChange }) {
           { key: 'products', label: 'Inventory Manager', icon: Package },
           { key: 'orders', label: 'Order Dispatcher', icon: CheckCircle2 },
           { key: 'coupons', label: 'Coupon Builder', icon: Tag },
-          { key: 'reviews', label: 'Reviews Moderator', icon: Star },
+          { key: 'reviews', label: 'Reviews Manager', icon: Star },
         ].map((tab) => {
           const Icon = tab.icon;
           return (
@@ -191,9 +208,9 @@ export default function Admin({ onPageChange }) {
             >
               <Icon size={14} />
               <span>{tab.label}</span>
-              {tab.key === 'reviews' && pendingReviews.length > 0 && (
-                <span className="bg-luxury-red text-white text-[9px] px-1.5 py-0.5 rounded-full font-sans font-black ml-1">
-                  {pendingReviews.length}
+              {tab.key === 'reviews' && activeReviews.length > 0 && (
+                <span className="bg-white/10 text-white text-[9px] px-1.5 py-0.5 rounded-full font-sans font-medium ml-1">
+                  {activeReviews.length}
                 </span>
               )}
             </button>
@@ -208,7 +225,7 @@ export default function Admin({ onPageChange }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-luxury-gray border border-white/5 p-6 rounded-md space-y-2">
               <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Gross Sales Revenue</span>
-              <p className="text-2xl font-extrabold text-luxury-gold">${totalSales.toLocaleString()}</p>
+              <p className="text-2xl font-extrabold text-luxury-gold">{formatPrice(totalSales, currentCurrency)}</p>
               <span className="text-[9px] text-emerald-400 flex items-center space-x-1 font-medium">
                 <ArrowUpRight size={10} />
                 <span>+12.4% vs last week</span>
@@ -535,7 +552,7 @@ export default function Admin({ onPageChange }) {
                       <span className="font-semibold text-white truncate max-w-xs">{p.name}</span>
                     </td>
                     <td className="p-4 uppercase tracking-wider text-[10px] text-gray-400">{p.category}</td>
-                    <td className="p-4 font-bold text-white">${p.price.toLocaleString()}</td>
+                    <td className="p-4 font-bold text-white">{formatPrice(p.price, currentCurrency)}</td>
                     <td className="p-4">
                       <span className={`font-semibold ${p.stock === 0 ? 'text-luxury-red font-bold' : 'text-gray-300'}`}>
                         {p.stock === 0 ? 'SOLD OUT' : `${p.stock} units`}
@@ -597,7 +614,7 @@ export default function Admin({ onPageChange }) {
                           {o.items.map(item => `${item.name} (x${item.quantity})`).join(', ')}
                         </p>
                       </td>
-                      <td className="p-4 font-bold text-luxury-gold">${o.total.toLocaleString()}</td>
+                      <td className="p-4 font-bold text-luxury-gold">{formatPrice(o.total, currentCurrency)}</td>
                       <td className="p-4">
                         <select
                           value={o.status}
@@ -714,16 +731,16 @@ export default function Admin({ onPageChange }) {
         </div>
       )}
 
-      {/* --- TAB CONTENT: REVIEW MODERATOR --- */}
+      {/* --- TAB CONTENT: REVIEW MANAGER --- */}
       {activeTab === 'reviews' && (
         <div className="space-y-6">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-white">Client Review Moderation</h3>
+          <h3 className="text-xs font-bold uppercase tracking-widest text-white">Client Review Manager</h3>
           
-          {pendingReviews.length === 0 ? (
-            <p className="text-gray-400 text-xs italic p-4 text-center border border-dashed border-white/10 rounded">All submitted reviews have been moderated. No pending queue.</p>
+          {activeReviews.length === 0 ? (
+            <p className="text-gray-400 text-xs italic p-4 text-center border border-dashed border-white/10 rounded">No published reviews found.</p>
           ) : (
             <div className="space-y-4">
-              {pendingReviews.map((item) => (
+              {activeReviews.map((item) => (
                 <div key={item.review.id} className="bg-luxury-gray border border-white/5 p-5 rounded flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
@@ -747,18 +764,11 @@ export default function Admin({ onPageChange }) {
 
                   <div className="flex space-x-2 flex-shrink-0">
                     <button
-                      onClick={() => handleReviewStatus(item.productId, item.review.id, 'approved')}
-                      className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-wider rounded flex items-center space-x-1.5 transition cursor-pointer"
-                    >
-                      <Check size={12} />
-                      <span>Approve</span>
-                    </button>
-                    <button
                       onClick={() => handleReviewStatus(item.productId, item.review.id, 'hidden')}
                       className="px-3 py-1.5 bg-transparent border border-white/10 hover:border-luxury-red hover:text-luxury-red text-[10px] font-bold uppercase tracking-wider rounded flex items-center space-x-1.5 transition cursor-pointer"
                     >
-                      <X size={12} />
-                      <span>Hide</span>
+                      <Trash2 size={12} />
+                      <span>Remove Review</span>
                     </button>
                   </div>
                 </div>

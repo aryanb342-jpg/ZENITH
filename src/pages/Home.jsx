@@ -10,7 +10,7 @@ import {
   animate,
   useScroll,
 } from 'framer-motion';
-import { Star, Award, ArrowRight, ChevronDown } from 'lucide-react';
+import { Star, Award, ArrowRight, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 /* ─────────────────────────────────────────────────────────────────────
    ANIMATED COUNTER
@@ -286,7 +286,7 @@ function CollectionCard({ col, idx, onPageChange }) {
       onMouseMove={onMove}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={onLeave}
-      className="relative h-[560px] border border-luxury-text/10 rounded-xl overflow-hidden cursor-pointer flex flex-col justify-end p-10 sm:p-12 bg-white"
+      className="relative h-[780px] border border-luxury-text/10 rounded-xl overflow-hidden cursor-pointer flex flex-col justify-end p-10 sm:p-12 bg-white"
       variants={enterAnims[idx]}
       initial="hidden"
       whileInView="visible"
@@ -330,23 +330,26 @@ function CollectionCard({ col, idx, onPageChange }) {
       <div className="relative z-10 space-y-3" style={{ transform: 'translateZ(30px)' }}>
         <motion.span
           className="block text-[11px] font-extrabold tracking-[0.2em] uppercase"
-          style={{ color: col.accent }}
-          animate={{ letterSpacing: hov ? '0.28em' : '0.2em', opacity: hov ? 1 : 0.8 }}
+          style={{ color: '#000000' }}
+          animate={{ letterSpacing: hov ? '0.28em' : '0.2em' }}
           transition={{ duration: 0.2 }}
         >
           {col.tagline}
         </motion.span>
         <motion.h3
-          className="text-3xl sm:text-4xl font-serif font-black text-black uppercase"
-          animate={{ y: hov ? -3 : 0 }}
+          className="text-3xl sm:text-4xl font-serif font-black uppercase"
+          animate={{ color: hov ? '#1e40af' : '#000000', y: hov ? -3 : 0 }}
           transition={{ duration: 0.2 }}
         >
           {col.name}
         </motion.h3>
-        <p className="text-black/65 text-sm font-medium leading-relaxed line-clamp-2">{col.desc}</p>
+        <p className="text-black text-sm font-medium leading-relaxed line-clamp-2">
+          {col.desc}
+        </p>
         <motion.div
           className="flex items-center gap-2 text-sm font-bold pt-1"
-          animate={{ x: hov ? 5 : 0, color: hov ? col.accent : '#201e1b', gap: hov ? 14 : 8 }}
+          style={{ color: '#000000' }}
+          animate={{ x: hov ? 5 : 0, gap: hov ? 14 : 8 }}
           transition={{ duration: 0.18 }}
         >
           <span>DISCOVER</span><ArrowRight size={13} />
@@ -393,7 +396,42 @@ export default function Home({ onPageChange }) {
   }, [rawX, rawY]);
   const onMouseLeave = useCallback(() => { rawX.set(0); rawY.set(0); }, [rawX, rawY]);
 
-  const featured = products.slice(0, 5);
+  // --- CAROUSEL SLIDER STATE & LOGIC ---
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [visibleCards, setVisibleCards] = useState(4);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setVisibleCards(1);
+      } else if (window.innerWidth < 1024) {
+        setVisibleCards(2);
+      } else {
+        setVisibleCards(4);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const maxIndex = Math.max(0, products.length - visibleCards);
+
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+  }, [maxIndex]);
+
+  const prevSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+  }, [maxIndex]);
+
+  useEffect(() => {
+    if (products.length <= visibleCards) return;
+    const timer = setInterval(nextSlide, 1600);
+    return () => clearInterval(timer);
+  }, [nextSlide, visibleCards, products.length, currentIndex]);
+
+  const featured = products;
 
   const collections = [
     { name: 'Khronomaster', image: '/assets/media__1782899491297.jpg', tagline: 'High-Frequency Chronographs', desc: 'Powered by the legendary El Primero caliber, blending historical authenticity with modern design.', filter: { category: 'Khronomaster' }, accent: '#34d399' },
@@ -630,17 +668,18 @@ export default function Home({ onPageChange }) {
 
       {/* ══════════ COLLECTIONS ══════════
           Each card: different enter anim + full 3-D mouse-track tilt + image parallax */}
-      <section className="w-full px-4 sm:px-8 lg:px-12 pt-16 pb-12 space-y-10">
+      <section className="w-full px-4 sm:px-8 lg:px-12 pt-32 pb-24 space-y-14">
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <Reveal dir="flip">
             <p className="text-xs text-luxury-gold-dark font-black tracking-[0.22em] uppercase">The Pillars of KHRONIQ</p>
           </Reveal>
-          <SlideReveal delay={0.1}>
-            <h2 className="text-4xl sm:text-5xl font-black font-serif text-luxury-text tracking-wide uppercase">Explore Collections</h2>
-          </SlideReveal>
-          <motion.div className="w-16 h-[3px] bg-luxury-gold-dark mx-auto"
-            initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }}
-            transition={{ duration: 0.75, delay: 0.28 }} />
+          <motion.div 
+            className="w-20 h-[3px] bg-luxury-gold-dark mx-auto"
+            initial={{ scaleX: 0 }} 
+            whileInView={{ scaleX: 1 }} 
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: 'easeOut' }} 
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -690,17 +729,50 @@ export default function Home({ onPageChange }) {
               transition={{ duration: 0.8, delay: 0.25 }} />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 w-full px-4 sm:px-8 lg:px-12">
-            {featured.map((product, idx) => (
-              <motion.div key={product.id}
-                initial={{ opacity: 0, y: 52, scale: 0.92 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: true, margin: '-30px' }}
-                transition={{ duration: 0.6, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                whileHover={{ y: -10, scale: 1.04, transition: { duration: 0.2 } }}>
-                <ProductCard product={product} onPageChange={onPageChange} />
+          <div className="relative w-full px-4 sm:px-16 lg:px-20">
+            {/* Carousel Viewport */}
+            <div className="overflow-hidden py-4 px-1">
+              <motion.div
+                className="flex gap-6"
+                animate={{
+                  x: `calc(-${currentIndex * 100 / visibleCards}% - ${currentIndex * 24 / visibleCards}px)`
+                }}
+                transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+              >
+                {featured.map((product) => (
+                  <div
+                    key={product.id}
+                    className="h-full transition duration-300"
+                    style={{
+                      width: `calc(${100 / visibleCards}% - ${24 * (visibleCards - 1) / visibleCards}px)`,
+                      flexShrink: 0
+                    }}
+                  >
+                    <ProductCard product={product} onPageChange={onPageChange} />
+                  </div>
+                ))}
               </motion.div>
-            ))}
+            </div>
+
+            {/* Navigation Arrows */}
+            {featured.length > visibleCards && (
+              <>
+                <button
+                  onClick={prevSlide}
+                  className="absolute left-2 sm:left-4 lg:left-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-black/60 border border-white/10 text-white flex items-center justify-center hover:bg-luxury-gold hover:text-luxury-dark hover:border-luxury-gold transition duration-300 cursor-pointer shadow-lg"
+                  aria-label="Previous timepiece"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-2 sm:right-4 lg:right-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-black/60 border border-white/10 text-white flex items-center justify-center hover:bg-luxury-gold hover:text-luxury-dark hover:border-luxury-gold transition duration-300 cursor-pointer shadow-lg"
+                  aria-label="Next timepiece"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </>
+            )}
           </div>
         </section>
 

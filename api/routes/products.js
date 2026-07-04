@@ -122,14 +122,7 @@ router.post('/:id/reviews', protect, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }
 
-    // Check if user has purchased the product
-    const hasPurchased = await Order.findOne({
-      userEmail: req.user.email,
-      'items.productId': req.params.id,
-      status: { $ne: 'Cancelled' }
-    });
-
-    const status = hasPurchased ? 'approved' : 'pending';
+    const status = 'approved';
 
     const review = {
       userName: req.user.name || 'Anonymous User',
@@ -143,9 +136,7 @@ router.post('/:id/reviews', protect, async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: hasPurchased 
-        ? 'Review added successfully!' 
-        : 'Review submitted! It will appear after admin moderation.',
+      message: 'Review added successfully!',
       reviews: product.reviews
     });
   } catch (error) {
