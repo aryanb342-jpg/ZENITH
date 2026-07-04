@@ -66,11 +66,7 @@ export default function ProductCard({ product, onPageChange }) {
     >
       {/* Wishlist */}
       <motion.button
-        onTap={handleWishlistToggle}
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-        }}
+        onClick={handleWishlistToggle}
         className="wishlist-btn absolute top-3 right-3 z-10 p-2.5 focus:outline-none"
         whileHover={{ scale: 1.2 }}
         whileTap={{ scale: 0.85 }}
