@@ -64,27 +64,6 @@ export default function ProductCard({ product, onPageChange, showRemove = false 
       whileHover={{ z: 20 }}
       transition={{ type: 'spring', stiffness: 200, damping: 20 }}
     >
-      {/* Wishlist */}
-      <motion.button
-        onClick={handleWishlistToggle}
-        className="wishlist-btn absolute top-3 right-3 z-10 p-2.5 focus:outline-none"
-        whileHover={{ scale: 1.2 }}
-        whileTap={{ scale: 0.85 }}
-      >
-        <motion.div
-          animate={isWishlisted ? { scale: [1, 1.4, 1] } : {}}
-          transition={{ duration: 0.35 }}
-        >
-          <Heart
-            size={18}
-            className="transition duration-300"
-            fill={isWishlisted ? '#e10600' : 'none'}
-            stroke={isWishlisted ? '#e10600' : 'currentColor'}
-            style={{ color: isWishlisted ? '#e10600' : '#a3a3a3' }}
-          />
-        </motion.div>
-      </motion.button>
-
       {/* Image */}
       <div className="aspect-square bg-[#f6f6f6] rounded-sm overflow-hidden relative flex items-center justify-center">
         <motion.img
@@ -111,6 +90,28 @@ export default function ProductCard({ product, onPageChange, showRemove = false 
           </div>
         )}
       </div>
+
+      {/* Wishlist */}
+      <motion.button
+        onClick={handleWishlistToggle}
+        className="wishlist-btn absolute top-3 right-3 z-20 p-2.5 focus:outline-none"
+        style={{ transform: 'translateZ(30px)' }}
+        whileHover={{ scale: 1.2 }}
+        whileTap={{ scale: 0.85 }}
+      >
+        <motion.div
+          animate={isWishlisted ? { scale: [1, 1.4, 1] } : {}}
+          transition={{ duration: 0.35 }}
+        >
+          <Heart
+            size={18}
+            className="transition duration-300"
+            fill={isWishlisted ? '#e10600' : 'none'}
+            stroke={isWishlisted ? '#e10600' : 'currentColor'}
+            style={{ color: isWishlisted ? '#e10600' : '#a3a3a3' }}
+          />
+        </motion.div>
+      </motion.button>
 
       {/* Details */}
       <motion.div
