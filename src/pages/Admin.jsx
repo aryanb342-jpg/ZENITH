@@ -9,12 +9,13 @@ import {
   deleteCoupon, 
   moderateReview,
   selectCurrentCurrency,
-  formatPrice
+  formatPrice,
+  logoutUser
 } from '../store/slices/watchSlice';
 import { 
   BarChart3, Plus, Edit, Trash2, Check, X, Tag, Star, 
   Package, AlertTriangle, ShieldAlert, ArrowLeft, ArrowUpRight,
-  CheckCircle2
+  CheckCircle2, LogOut
 } from 'lucide-react';
 
 export default function Admin({ onPageChange }) {
@@ -163,13 +164,26 @@ export default function Admin({ onPageChange }) {
           <p className="text-gray-400 text-xs mt-1">Configure Khroniq store parameters, monitor sales trends, and verify stock thresholds.</p>
         </div>
         
-        <button
-          onClick={() => onPageChange('home')}
-          className="px-4 py-2 border border-white/10 text-gray-300 hover:text-white text-xs font-semibold uppercase tracking-wider flex items-center space-x-1.5 transition cursor-pointer"
-        >
-          <ArrowLeft size={12} />
-          <span>Exit Dashboard</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => onPageChange('home')}
+            className="px-4 py-2 border border-white/10 text-gray-300 hover:text-white text-xs font-semibold uppercase tracking-wider flex items-center space-x-1.5 transition cursor-pointer"
+          >
+            <ArrowLeft size={12} />
+            <span>Exit Dashboard</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              dispatch(logoutUser());
+              onPageChange('home');
+            }}
+            className="px-4 py-2 bg-luxury-red hover:bg-red-600 text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 transition cursor-pointer rounded-sm"
+          >
+            <LogOut size={12} />
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
 
       {/* Admin Tab Selectors */}
