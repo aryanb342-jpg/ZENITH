@@ -1,288 +1,658 @@
-import React from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import ProductCard from '../components/ProductCard';
-import { motion } from 'framer-motion';
-import { Star, Award, Compass, ArrowRight } from 'lucide-react';
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  useSpring,
+  useInView,
+  animate,
+  useScroll,
+} from 'framer-motion';
+import { Star, Award, ArrowRight, ChevronDown } from 'lucide-react';
 
-export default function Home({ onPageChange }) {
-  const products = useSelector(state => state.watch.products);
+/* ─────────────────────────────────────────────────────────────────────
+   ANIMATED COUNTER
+───────────────────────────────────────────────────────────────────── */
+function AnimatedCounter({ value, suffix = '', duration = 2 }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    const n = parseFloat(value.replace(/[^0-9.]/g, ''));
+    const c = animate(0, n, {
+      duration, ease: 'easeOut',
+      onUpdate(v) { setDisplay(Number.isInteger(n) ? Math.round(v) : v.toFixed(1)); },
+    });
+    return c.stop;
+  }, [inView, value, duration]);
+  return <span ref={ref}>{display}{suffix}</span>;
+}
 
-  // Show first 5 products in the featured collection to match the 5-column layout
-  const featuredProducts = products.slice(0, 5);
+/* ─────────────────────────────────────────────────────────────────────
+   FLOATING PARTICLE
+───────────────────────────────────────────────────────────────────── */
+function FloatingParticle({ style }) {
+  return (
+    <motion.div
+      className="absolute rounded-full pointer-events-none"
+      style={style}
+      animate={{ y: [0, -26, 0], x: [0, 10, -7, 0], opacity: [0.1, 0.4, 0.1], scale: [1, 1.5, 1] }}
+      transition={{ duration: style.dur || 6, repeat: Infinity, ease: 'easeInOut', delay: style.del || 0 }}
+    />
+  );
+}
 
-  const collections = [
-    {
-      name: 'Khronomaster',
-      image: '/assets/media__1782899491297.jpg',
-      tagline: 'High-Frequency Chronographs',
-      desc: 'Powered by the legendary El Primero caliber, blending historical authenticity with modern design.',
-      filter: { category: 'Khronomaster' }
-    },
-    {
-      name: 'Defy',
-      image: '/assets/media__1782899491366.jpg',
-      tagline: 'Futuristic Watchmaking',
-      desc: 'Unmatched durability and architectural design built for the boundary-breakers.',
-      filter: { category: 'Defy' }
-    },
-    {
-      name: 'Elite & Heritage',
-      image: '/assets/media__1782899491225.jpg',
-      tagline: 'Timeless Swiss Classics',
-      desc: 'Elegant profiles, vintage inspirations, and dress chronometers suited for any formal setting.',
-      filter: { category: 'Heritage' }
-    }
+/* ─────────────────────────────────────────────────────────────────────
+   SCROLL REVEAL
+───────────────────────────────────────────────────────────────────── */
+function Reveal({ children, delay = 0, dir = 'up', distance = 48, className = '' }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+  const variants = {
+    up:    { hidden: { opacity: 0, y: distance },  visible: { opacity: 1, y: 0 } },
+    down:  { hidden: { opacity: 0, y: -distance }, visible: { opacity: 1, y: 0 } },
+    left:  { hidden: { opacity: 0, x: distance },  visible: { opacity: 1, x: 0 } },
+    right: { hidden: { opacity: 0, x: -distance }, visible: { opacity: 1, x: 0 } },
+    scale: { hidden: { opacity: 0, scale: 0.80 },  visible: { opacity: 1, scale: 1 } },
+    flip:  { hidden: { opacity: 0, rotateX: 55 },  visible: { opacity: 1, rotateX: 0 } },
+  };
+  return (
+    <motion.div ref={ref} variants={variants[dir]} initial="hidden"
+      animate={inView ? 'visible' : 'hidden'}
+      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+      className={className}>
+      {children}
+    </motion.div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   CLIP-SLIDE TEXT REVEAL
+───────────────────────────────────────────────────────────────────── */
+function SlideReveal({ children, delay = 0 }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-50px' });
+  return (
+    <div ref={ref} style={{ overflow: 'hidden' }}>
+      <motion.div
+        initial={{ y: '105%' }}
+        animate={inView ? { y: '0%' } : { y: '105%' }}
+        transition={{ duration: 0.72, delay, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   MAGNETIC BUTTON
+───────────────────────────────────────────────────────────────────── */
+function MagBtn({ children, className, onClick }) {
+  const ref = useRef(null);
+  const x = useMotionValue(0); const y = useMotionValue(0);
+  const sx = useSpring(x, { stiffness: 280, damping: 20 });
+  const sy = useSpring(y, { stiffness: 280, damping: 20 });
+  const onMove = (e) => {
+    const r = ref.current.getBoundingClientRect();
+    x.set((e.clientX - (r.left + r.width / 2)) * 0.4);
+    y.set((e.clientY - (r.top + r.height / 2)) * 0.4);
+  };
+  return (
+    <motion.button ref={ref} onMouseMove={onMove} onMouseLeave={() => { x.set(0); y.set(0); }}
+      style={{ x: sx, y: sy }} whileTap={{ scale: 0.94 }}
+      className={className} onClick={onClick}>{children}</motion.button>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   MARQUEE
+───────────────────────────────────────────────────────────────────── */
+function Marquee({ items, speed = 20, reverse = false }) {
+  return (
+    <div className="overflow-hidden py-4 border-y border-luxury-text/8 bg-white/70 backdrop-blur-sm select-none">
+      <motion.div className="flex gap-14 whitespace-nowrap"
+        animate={{ x: reverse ? ['-50%', '0%'] : ['0%', '-50%'] }}
+        transition={{ duration: speed, repeat: Infinity, ease: 'linear' }}>
+        {[...items, ...items].map((item, i) => (
+          <span key={i} className="text-[11px] font-bold tracking-[0.22em] uppercase text-luxury-muted flex items-center gap-3">
+            <Star size={7} fill="currentColor" className="text-luxury-gold" />{item}
+          </span>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   GENDER PANEL — full mouse-tracking parallax inside the card
+───────────────────────────────────────────────────────────────────── */
+function GenderPanel({ label, img, gender, delay, accent, onPageChange }) {
+  const panelRef = useRef(null);
+
+  /* Raw mouse position -1..1 relative to panel */
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const [hovered, setHovered] = useState(false);
+
+  /* Spring config — ultra‑smooth glide */
+  const cfg = { stiffness: 30, damping: 30, mass: 1.2 };
+  const smx = useSpring(mx, cfg);
+  const smy = useSpring(my, cfg);
+
+  /* Image moves in the DIRECTION of mouse (follow) */
+  const imgX = useTransform(smx, [-1, 1], ['-22px', '22px']);
+  const imgY = useTransform(smy, [-1, 1], ['-14px', '14px']);
+
+  /* Text lifts opposite — creates depth */
+  const txtY = useTransform(smy, [-1, 1], ['8px', '-8px']);
+
+  /* Overlay brightness reacts to horizontal position */
+  const overlayOp = useTransform(smx, [-1, 1], [0.65, 0.5]);
+
+  const handleMove = useCallback((e) => {
+    const r = panelRef.current?.getBoundingClientRect();
+    if (!r) return;
+    mx.set(((e.clientX - r.left) / r.width) * 2 - 1);
+    my.set(((e.clientY - r.top) / r.height) * 2 - 1);
+  }, [mx, my]);
+
+  const handleLeave = useCallback(() => {
+    mx.set(0); my.set(0); setHovered(false);
+  }, [mx, my]);
+
+  return (
+    <motion.div
+      ref={panelRef}
+      onClick={() => onPageChange('shop', { gender })}
+      onMouseMove={handleMove}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={handleLeave}
+      className="dark-panel relative h-[600px] overflow-hidden cursor-pointer"
+      initial={{ opacity: 0, y: 60 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+      style={{ perspective: 900 }}
+    >
+      {/* ── Image — follows mouse direction ── */}
+      <motion.div
+        className="absolute inset-[-5%] bg-cover bg-center"
+        style={{
+          backgroundImage: `url('${img}')`,
+          x: imgX,
+          y: imgY,
+        }}
+        animate={{ scale: hovered ? 1.05 : 1 }}
+        transition={{ duration: 2.5, ease: [0.22, 1, 0.36, 1] }}
+      />
+
+      {/* ── Dark gradient overlay ── */}
+      <motion.div
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.18) 50%, transparent 100%)',
+          opacity: overlayOp,
+        }}
+      />
+
+      {/* ── Colour tint wash — fades in on hover ── */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: `linear-gradient(135deg, ${accent}18 0%, transparent 60%)` }}
+        animate={{ opacity: hovered ? 1 : 0 }}
+        transition={{ duration: 0.65 }}
+      />
+
+      {/* ── Shimmer sweep — fires once on enter ── */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.13) 50%, transparent 60%)',
+        }}
+        animate={hovered ? { x: ['−100%', '200%'] } : { x: '-100%' }}
+        transition={{ duration: 0.55, ease: 'easeInOut' }}
+      />
+
+      {/* ── Text block — parallax lift ── */}
+      <motion.div
+        className="absolute bottom-0 left-0 w-full p-8 sm:p-12 space-y-4 z-10"
+        style={{ y: txtY }}
+      >
+        <motion.h3
+          className="font-serif text-3xl sm:text-4xl font-bold text-white tracking-wide uppercase drop-shadow-xl"
+          animate={{ y: hovered ? -4 : 0, letterSpacing: hovered ? '0.08em' : '0.05em' }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {label}
+        </motion.h3>
+
+        <motion.div
+          className="flex items-center gap-2 text-white text-xs font-bold tracking-widest uppercase overflow-hidden"
+          animate={{ opacity: hovered ? 1 : 0.7, x: hovered ? 0 : -6 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <motion.button
+            onClick={(e) => { e.stopPropagation(); onPageChange('shop', { gender }); }}
+            className="flex items-center gap-2 border-b pb-0.5 w-fit"
+            style={{ borderColor: accent }}
+            whileHover={{ gap: 14 }}
+            transition={{ duration: 0.35 }}
+          >
+            Discover <ArrowRight size={12} />
+          </motion.button>
+        </motion.div>
+      </motion.div>
+
+
+    </motion.div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   COLLECTION CARD — mouse-tracking tilt per card
+───────────────────────────────────────────────────────────────────── */
+function CollectionCard({ col, idx, onPageChange }) {
+  const cardRef = useRef(null);
+  const mx = useMotionValue(0); const my = useMotionValue(0);
+  const rx = useSpring(useTransform(my, [-1, 1], [10, -10]), { stiffness: 300, damping: 25 });
+  const ry = useSpring(useTransform(mx, [-1, 1], [-10, 10]), { stiffness: 300, damping: 25 });
+  const imgX = useTransform(useSpring(mx, { stiffness: 200, damping: 25 }), [-1, 1], ['-12px', '12px']);
+  const imgY = useTransform(useSpring(my, { stiffness: 200, damping: 25 }), [-1, 1], ['-8px', '8px']);
+  const [hov, setHov] = useState(false);
+
+  const onMove = (e) => {
+    const r = cardRef.current?.getBoundingClientRect();
+    if (!r) return;
+    mx.set(((e.clientX - r.left) / r.width) * 2 - 1);
+    my.set(((e.clientY - r.top) / r.height) * 2 - 1);
+  };
+  const onLeave = () => { mx.set(0); my.set(0); setHov(false); };
+
+  /* Each card: different enter animation */
+  const enterAnims = [
+    { hidden: { opacity: 0, x: -70, rotate: -4 }, visible: { opacity: 1, x: 0, rotate: 0 } },
+    { hidden: { opacity: 0, y: 80, scale: 0.88 }, visible: { opacity: 1, y: 0, scale: 1 } },
+    { hidden: { opacity: 0, x: 70, rotate: 4 },  visible: { opacity: 1, x: 0, rotate: 0 } },
   ];
 
   return (
+    <motion.div
+      ref={cardRef}
+      onClick={() => onPageChange('shop', col.filter)}
+      onMouseMove={onMove}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={onLeave}
+      className="relative h-[560px] border border-luxury-text/10 rounded-xl overflow-hidden cursor-pointer flex flex-col justify-end p-10 sm:p-12 bg-white"
+      variants={enterAnims[idx]}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{ duration: 0.85, delay: idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
+      style={{
+        rotateX: rx, rotateY: ry,
+        transformStyle: 'preserve-3d',
+        boxShadow: hov ? `0 30px 70px ${col.accent}30` : '0 4px 20px rgba(0,0,0,0.06)',
+        transition: 'box-shadow 0.25s ease',
+      }}
+    >
+      {/* Image — parallax inside card */}
+      <motion.div className="absolute inset-[-5%] z-0" style={{ x: imgX, y: imgY }}>
+        <motion.img
+          src={col.image} alt={col.name}
+          className="w-full h-full object-cover"
+          animate={{ scale: hov ? 1.1 : 1 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        />
+      </motion.div>
+      <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent z-[1]" />
+
+      {/* Accent bar from center */}
+      <motion.div
+        className="absolute top-0 h-[3px] z-20"
+        style={{ background: col.accent, left: '50%', translateX: '-50%' }}
+        animate={{ width: hov ? '100%' : '0%' }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+      />
+
+      {/* Glint diagonal sweep */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none z-[2]"
+        style={{ background: 'linear-gradient(110deg, transparent 38%, rgba(255,255,255,0.18) 50%, transparent 62%)' }}
+        animate={hov ? { x: ['−120%', '220%'] } : { x: '-120%' }}
+        transition={{ duration: 0.45, ease: 'easeOut' }}
+      />
+
+      {/* Text area */}
+      <div className="relative z-10 space-y-3" style={{ transform: 'translateZ(30px)' }}>
+        <motion.span
+          className="block text-[11px] font-extrabold tracking-[0.2em] uppercase"
+          style={{ color: col.accent }}
+          animate={{ letterSpacing: hov ? '0.28em' : '0.2em', opacity: hov ? 1 : 0.8 }}
+          transition={{ duration: 0.2 }}
+        >
+          {col.tagline}
+        </motion.span>
+        <motion.h3
+          className="text-3xl sm:text-4xl font-serif font-black text-black uppercase"
+          animate={{ y: hov ? -3 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {col.name}
+        </motion.h3>
+        <p className="text-black/65 text-sm font-medium leading-relaxed line-clamp-2">{col.desc}</p>
+        <motion.div
+          className="flex items-center gap-2 text-sm font-bold pt-1"
+          animate={{ x: hov ? 5 : 0, color: hov ? col.accent : '#201e1b', gap: hov ? 14 : 8 }}
+          transition={{ duration: 0.18 }}
+        >
+          <span>DISCOVER</span><ArrowRight size={13} />
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   HOME PAGE
+═══════════════════════════════════════════════════════════════════════ */
+export default function Home({ onPageChange }) {
+  const products = useSelector(state => state.watch.products);
+
+  /* ── Hero unified parallax ── */
+  const heroRef = useRef(null);
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const spr = { stiffness: 55, damping: 16, mass: 0.8 };
+  const spX = useSpring(rawX, spr);
+  const spY = useSpring(rawY, spr);
+
+  /* ALL content moves together in the cursor direction */
+  const contentX = useTransform(spX, [-1, 1], ['-22px', '22px']);
+  const contentY = useTransform(spY, [-1, 1], ['-13px', '13px']);
+
+  /* Video drifts opposite (depth layer) */
+  const vidX = useTransform(spX, [-1, 1], ['14px', '-14px']);
+  const vidY = useTransform(spY, [-1, 1], ['9px', '-9px']);
+
+  /* Orb moves more opposite (furthest layer) */
+  const orbX = useTransform(spX, [-1, 1], ['55px', '-55px']);
+  const orbY = useTransform(spY, [-1, 1], ['32px', '-32px']);
+
+  const { scrollY } = useScroll();
+  const scrollFade = useTransform(scrollY, [0, 180], [1, 0]);
+
+  const onMouseMove = useCallback((e) => {
+    const r = heroRef.current?.getBoundingClientRect();
+    if (!r) return;
+    rawX.set(((e.clientX - r.left) / r.width) * 2 - 1);
+    rawY.set(((e.clientY - r.top) / r.height) * 2 - 1);
+  }, [rawX, rawY]);
+  const onMouseLeave = useCallback(() => { rawX.set(0); rawY.set(0); }, [rawX, rawY]);
+
+  const featured = products.slice(0, 5);
+
+  const collections = [
+    { name: 'Khronomaster', image: '/assets/media__1782899491297.jpg', tagline: 'High-Frequency Chronographs', desc: 'Powered by the legendary El Primero caliber, blending historical authenticity with modern design.', filter: { category: 'Khronomaster' }, accent: '#34d399' },
+    { name: 'Defy', image: '/assets/media__1782899491366.jpg', tagline: 'Futuristic Watchmaking', desc: 'Unmatched durability and architectural design built for the boundary-breakers.', filter: { category: 'Defy' }, accent: '#60a5fa' },
+    { name: 'Elite & Heritage', image: '/assets/media__1782899491225.jpg', tagline: 'Timeless Swiss Classics', desc: 'Elegant profiles, vintage inspirations, and dress chronometers suited for any formal setting.', filter: { category: 'Heritage' }, accent: '#c5a880' },
+  ];
+
+  const marqueeA = ['Swiss Made Since 1865', 'El Primero Caliber', 'COSC Certified', 'Sapphire Crystal', '36,000 vph', 'In-House Movement'];
+  const marqueeB = ['Water Resistant 200m', 'Limited Edition', 'Manufacture Movements', 'Chronometry Prize', 'Le Locle Switzerland', 'Precision Engineered'];
+  const stats = [
+    { raw: '36', suffix: 'K', label: 'vibrations/hour' },
+    { raw: '100', suffix: '%', label: 'Swiss Made' },
+    { raw: '2300', suffix: '+', label: 'Prizes Won' },
+  ];
+
+  /* ─── Render ─────────────────────────────────────────────────────── */
+  return (
     <>
-
-      {/* Hero Section - Excluded from light theme CSS overrides by using bg-[#1c1a17] */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-[#1c1a17] border-b border-white/5">
-        {/* Fullscreen Video Background */}
-        <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="object-cover w-full h-full filter brightness-95 contrast-100"
-          >
+      {/* ══════════ HERO ══════════ */}
+      <section
+        ref={heroRef}
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
+        className="relative h-screen flex items-center justify-center overflow-hidden bg-[#1c1a17]"
+        style={{ perspective: '1200px' }}
+      >
+        {/* Video — deepest layer, drifts opposite */}
+        <motion.div className="absolute inset-0 z-0" style={{ x: vidX, y: vidY, scale: 1.06 }}>
+          <video autoPlay loop muted playsInline className="object-cover w-full h-full brightness-[0.87]">
             <source src="/assets/background.mp4" type="video/mp4" />
-            Your browser does not support HTML5 video.
           </video>
-          {/* Subtle shading overlays */}
-          <div className="absolute inset-0 bg-black/20" />
-        </div>
+          <div className="absolute inset-0 bg-black/28" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.65)_100%)]" />
+        </motion.div>
 
-        <div className="relative z-10 text-center sm:text-left px-4 sm:px-6 lg:px-8 max-w-7xl w-full mx-auto grid grid-cols-1 sm:grid-cols-12 gap-8 items-center">
-          <div className="col-span-1 sm:col-span-8 space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="flex justify-center sm:justify-start"
-            >
-              <span className="flex items-center space-x-2 border border-luxury-gold/45 text-luxury-gold px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase bg-black/40 backdrop-blur-sm">
+        {/* Ambient orb — furthest opposite */}
+        <motion.div className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full pointer-events-none z-[2]"
+          style={{ x: orbX, y: orbY, background: 'radial-gradient(circle,rgba(52,211,153,0.48) 0%,transparent 70%)', filter: 'blur(48px)' }}
+          animate={{ opacity: [0.07, 0.16, 0.07], scale: [1, 1.14, 1] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} />
+
+        {/* Particles */}
+        {[
+          { width: 4, height: 4, top: '18%', left: '14%', background: '#c5a880', dur: 5,   del: 0   },
+          { width: 6, height: 6, top: '63%', left: '8%',  background: '#34d399', dur: 7,   del: 1   },
+          { width: 3, height: 3, top: '77%', left: '78%', background: '#c5a880', dur: 6,   del: 2   },
+          { width: 5, height: 5, top: '32%', left: '88%', background: '#6ee7b7', dur: 8,   del: 0.5 },
+          { width: 4, height: 4, top: '68%', left: '52%', background: '#fff',    dur: 5.5, del: 1.5 },
+          { width: 3, height: 3, top: '12%', left: '63%', background: '#c5a880', dur: 9,   del: 3   },
+          { width: 5, height: 5, top: '44%', left: '30%', background: '#34d399', dur: 7.5, del: 2.5 },
+        ].map((p, i) => <FloatingParticle key={i} style={p} />)}
+
+        {/* ── ALL content as one unified block — follows cursor ── */}
+        <motion.div
+          className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-12 gap-8 items-center"
+          style={{ x: contentX, y: contentY }}
+        >
+          <div className="col-span-1 sm:col-span-8 space-y-6 text-center sm:text-left">
+            {/* Badge */}
+            <motion.div initial={{ opacity: 0, y: -26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }} className="flex justify-center sm:justify-start">
+              <motion.span className="inline-flex items-center gap-2 border border-luxury-gold/45 text-luxury-gold px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase bg-black/45 backdrop-blur-sm"
+                whileHover={{ scale: 1.05, borderColor: 'rgba(197,168,128,0.85)' }} transition={{ duration: 0.15 }}>
                 <Star size={10} fill="var(--color-luxury-gold)" className="animate-spin" style={{ animationDuration: '6s' }} />
-                <span>THE SWISS WATCH MANUFACTURE SINCE 1865</span>
-              </span>
+                THE SWISS WATCH MANUFACTURE SINCE 1865
+              </motion.span>
             </motion.div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="font-serif font-normal text-4xl sm:text-5xl md:text-7xl tracking-wider text-white leading-tight uppercase"
-            >
-              Time to Reach <br />
-              <span className="text-[#0f4605]">
-                Your Star
-              </span>
-            </motion.h1>
+            {/* Heading — both lines same depth */}
+            <motion.div initial={{ opacity: 0, y: 36 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.85, delay: 0.16, ease: [0.22, 1, 0.36, 1] }} className="select-none cursor-default">
+              <div className="font-serif font-normal text-4xl sm:text-5xl md:text-7xl tracking-wider text-white uppercase leading-tight">
+                Time to Reach
+              </div>
+              <div className="font-serif font-normal text-4xl sm:text-5xl md:text-7xl tracking-wider uppercase leading-tight mt-1">
+                <span style={{
+                  background: 'linear-gradient(135deg,#34d399 0%,#10b981 35%,#059669 62%,#6ee7b7 100%)',
+                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+                  filter: 'drop-shadow(0 0 22px rgba(52,211,153,0.55)) drop-shadow(0 0 52px rgba(16,185,129,0.28))',
+                  display: 'inline-block',
+                }}>Your Star</span>
+              </div>
+            </motion.div>
 
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-gray-200 text-sm sm:text-base max-w-xl font-light tracking-wide leading-relaxed"
-            >
+            {/* Subtitle */}
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.85, delay: 0.32 }}
+              className="text-gray-200 text-sm sm:text-base max-w-xl font-light tracking-wide leading-relaxed">
               KHRONIQ exists to inspire those who strive towards their dreams, offering unmatched horological mastery and mechanical innovation.
             </motion.p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="pt-4 flex flex-col sm:flex-row justify-center sm:justify-start items-center gap-4"
-            >
-              <button
-                onClick={() => onPageChange('shop')}
-                className="px-8 py-4 bg-luxury-gold-dark text-white text-xs font-bold tracking-widest uppercase hover:bg-luxury-gold transition duration-300 w-full sm:w-auto cursor-pointer shadow-md shadow-luxury-gold-dark/20 border border-luxury-gold-dark"
-              >
+            {/* Buttons */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.85, delay: 0.46 }}
+              className="pt-4 flex flex-col sm:flex-row justify-center sm:justify-start items-center gap-4">
+              <MagBtn onClick={() => onPageChange('shop')}
+                className="px-8 py-4 bg-luxury-gold-dark text-white text-xs font-bold tracking-widest uppercase hover:bg-luxury-gold transition-colors duration-150 w-full sm:w-auto cursor-pointer border border-luxury-gold-dark">
                 Explore Timepieces
-              </button>
-              <button
-                onClick={() => onPageChange('shop', { category: 'Khronomaster' })}
-                className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white hover:text-luxury-dark text-xs font-bold tracking-widest uppercase transition duration-300 w-full sm:w-auto cursor-pointer"
-              >
+              </MagBtn>
+              <MagBtn onClick={() => onPageChange('shop', { category: 'Khronomaster' })}
+                className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/25 text-white hover:bg-white/22 text-xs font-bold tracking-widest uppercase transition-colors duration-150 w-full sm:w-auto cursor-pointer">
                 Khronomaster DNA
-              </button>
+              </MagBtn>
             </motion.div>
           </div>
-        </div>
+        </motion.div>
+
+        {/* Scroll indicator */}
+        <motion.div style={{ opacity: scrollFade }} className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 z-20 pointer-events-none">
+          <span className="text-white/40 text-[9px] tracking-[0.3em] uppercase">Scroll</span>
+          <motion.div animate={{ y: [0, 9, 0] }} transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}>
+            <ChevronDown size={16} className="text-white/40" />
+          </motion.div>
+        </motion.div>
       </section>
 
-      {/* Men & Women Category Split Banner — Full-width, edge-to-edge, no spacing */}
+      {/* ══════════ MARQUEE A ══════════ */}
+      <Marquee items={marqueeA} speed={20} />
+
+      {/* ══════════ GENDER SPLIT ══════════
+          Each panel: mouse-tracking image parallax + reactive overlay + badge pop */}
       <section className="w-full overflow-hidden">
-        {/* Section Header */}
-        <div className="text-center py-12 bg-white">
-          <p className="text-[10px] text-luxury-gold-dark font-bold tracking-widest uppercase mb-3">CURATED FOR YOU</p>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-luxury-text tracking-wide uppercase">Shop By Gender</h2>
-          <div className="w-10 h-[1px] bg-luxury-text/40 mx-auto mt-4" />
+        <div className="text-center py-14 bg-white">
+          <Reveal dir="down">
+            <p className="text-[10px] text-luxury-gold-dark font-bold tracking-widest uppercase mb-3">CURATED FOR YOU</p>
+          </Reveal>
+          <SlideReveal delay={0.1}>
+            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-luxury-text tracking-wide uppercase">Shop By Gender</h2>
+          </SlideReveal>
+          <motion.div className="w-12 h-[2px] bg-luxury-gold-dark mx-auto mt-5"
+            initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }}
+            transition={{ duration: 0.65, delay: 0.28, ease: [0.22, 1, 0.36, 1] }} />
         </div>
 
-        {/* Split Image Panels — zero gap, edge-to-edge */}
         <div className="grid grid-cols-1 md:grid-cols-2">
-          {/* Men's Column */}
-          <div
-            onClick={() => onPageChange('shop', { gender: 'men' })}
-            className="dark-panel group relative h-[580px] overflow-hidden cursor-pointer"
-          >
-            <div
-              className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-[600ms]"
-              style={{ backgroundImage: "url('/assets/men_watches_beach.jpg')" }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
-            <div className="absolute bottom-0 left-0 p-8 sm:p-12 space-y-3 z-10">
-              <h3 className="font-serif text-3xl sm:text-4xl font-bold text-white tracking-wide uppercase drop-shadow-md">
-                Men's Watches
-              </h3>
-              <button
-                onClick={(e) => { e.stopPropagation(); onPageChange('shop', { gender: 'men' }); }}
-                className="flex items-center gap-2 text-white text-xs font-bold tracking-widest uppercase border-b border-white/60 pb-1 hover:border-white hover:gap-3 transition-all duration-300 w-fit"
-              >
-                Discover <ArrowRight size={12} />
-              </button>
-            </div>
-          </div>
-
-          {/* Women's Column */}
-          <div
-            onClick={() => onPageChange('shop', { gender: 'women' })}
-            className="dark-panel group relative h-[580px] overflow-hidden cursor-pointer"
-          >
-            <div
-              className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-[600ms]"
-              style={{ backgroundImage: "url('/assets/women_watches_beach.jpg')" }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
-            <div className="absolute bottom-0 left-0 p-8 sm:p-12 space-y-3 z-10">
-              <h3 className="font-serif text-3xl sm:text-4xl font-bold text-white tracking-wide uppercase drop-shadow-md">
-                Women's Watches
-              </h3>
-              <button
-                onClick={(e) => { e.stopPropagation(); onPageChange('shop', { gender: 'women' }); }}
-                className="flex items-center gap-2 text-white text-xs font-bold tracking-widest uppercase border-b border-white/60 pb-1 hover:border-white hover:gap-3 transition-all duration-300 w-fit"
-              >
-                Discover <ArrowRight size={12} />
-              </button>
-            </div>
-          </div>
+          <GenderPanel label="Men's Watches"   img="/assets/men_watches_beach.jpg"   gender="men"   delay={0}    accent="#c5a880" onPageChange={onPageChange} />
+          <GenderPanel label="Women's Watches" img="/assets/women_watches_beach.jpg" gender="women" delay={0.1}  accent="#34d399" onPageChange={onPageChange} />
         </div>
       </section>
 
-      {/* Collections Highlight Banner (Full width edge-to-edge layout, matching Featured) */}
-      <section className="w-full px-4 sm:px-8 lg:px-12 pt-36 pb-24 bg-transparent space-y-12">
+      {/* ══════════ MARQUEE B (reverse) ══════════ */}
+      <Marquee items={marqueeB} speed={18} reverse />
+
+      {/* ══════════ COLLECTIONS ══════════
+          Each card: different enter anim + full 3-D mouse-track tilt + image parallax */}
+      <section className="w-full px-4 sm:px-8 lg:px-12 pt-32 pb-24 space-y-14">
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <p className="text-xs sm:text-sm text-luxury-gold-dark font-black tracking-widest uppercase">The Pillars of KHRONIQ</p>
-          <h2 className="text-4xl sm:text-5xl font-black font-serif text-luxury-text tracking-wide uppercase">Explore Collections</h2>
+          <Reveal dir="flip">
+            <p className="text-xs text-luxury-gold-dark font-black tracking-[0.22em] uppercase">The Pillars of KHRONIQ</p>
+          </Reveal>
+          <SlideReveal delay={0.1}>
+            <h2 className="text-4xl sm:text-5xl font-black font-serif text-luxury-text tracking-wide uppercase">Explore Collections</h2>
+          </SlideReveal>
+          <motion.div className="w-16 h-[3px] bg-luxury-gold-dark mx-auto"
+            initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }}
+            transition={{ duration: 0.75, delay: 0.28 }} />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {collections.map((col, idx) => (
-            <div
-              key={idx}
-              onClick={() => onPageChange('shop', col.filter)}
-              className="group relative h-[550px] border border-luxury-text/10 rounded-md overflow-hidden cursor-pointer flex flex-col justify-end p-10 sm:p-12 bg-white shadow-sm hover:shadow-md transition-all duration-300"
-            >
-              {/* Product Background Image */}
-              <div className="absolute inset-0 z-0 opacity-100 transition duration-500 flex items-center justify-center p-0 bg-luxury-bg/30">
-                <img
-                  src={col.image}
-                  alt={col.name}
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-white via-white/30 to-transparent" />
-              </div>
-
-              {/* Text Area */}
-              <div className="relative z-10 space-y-4">
-                <span className="text-xs sm:text-sm text-black font-extrabold tracking-widest uppercase">{col.tagline}</span>
-                <h3 className="text-3xl sm:text-4xl font-serif font-black text-black uppercase group-hover:text-[#0f4605] transition duration-200">{col.name}</h3>
-                <p className="text-black text-sm sm:text-base font-semibold leading-relaxed line-clamp-2">{col.desc}</p>
-                <div className="flex items-center space-x-2 text-black group-hover:text-[#0f4605] text-sm font-bold pt-2 transition-colors duration-200">
-                  <span>DISCOVER</span>
-                  <ArrowRight size={14} className="transform group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </div>
+            <CollectionCard key={idx} col={col} idx={idx} onPageChange={onPageChange} />
           ))}
         </div>
       </section>
 
-      {/* Rest of page sections with standard spacing */}
+      {/* ══════════ FEATURED PRODUCTS ══════════
+          Stagger reveal + hover pop lift + 3-D tilt inside ProductCard */}
       <div className="space-y-24 pb-12">
-
-      {/* Featured Collection Grid (Full width edge-to-edge layout, touching margins) */}
-      <section className="w-full py-24 bg-transparent space-y-10">
-        <div className="text-center max-w-2xl mx-auto space-y-3">
-          <p className="text-xs sm:text-sm text-luxury-gold-dark font-black tracking-widest uppercase">Signature Catalog</p>
-          <h2 className="text-4xl sm:text-5xl font-black font-serif text-luxury-text tracking-wide uppercase">Featured Masterpieces</h2>
-          <div className="w-16 h-[3px] bg-luxury-gold-dark mx-auto mt-4" />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 w-full px-4 sm:px-8 lg:px-12">
-          {featuredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onPageChange={onPageChange}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Wrapping the rest of the home sections to align them beautifully */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24">
-
-      {/* Brand Story & Manufacturing Section */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-16 bg-white border border-luxury-text/5 p-10 sm:p-24 rounded-md items-center shadow-sm">
-        <div className="space-y-8">
-          <div className="flex items-center space-x-1.5 text-luxury-gold-dark">
-            <Award size={20} />
-            <span className="text-xs font-bold tracking-widest uppercase">GENUINE CRAFTSMANSHIP</span>
+        <section className="w-full py-20 space-y-10">
+          <div className="text-center max-w-2xl mx-auto space-y-3 px-4">
+            <Reveal dir="up">
+              <p className="text-xs text-luxury-gold-dark font-black tracking-[0.22em] uppercase">Signature Catalog</p>
+            </Reveal>
+            <SlideReveal delay={0.1}>
+              <h2 className="text-4xl sm:text-5xl font-black font-serif text-luxury-text tracking-wide uppercase">Featured Masterpieces</h2>
+            </SlideReveal>
+            <motion.div className="w-16 h-[3px] bg-luxury-gold-dark mx-auto"
+              initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.25 }} />
           </div>
-          <h2 className="text-4xl sm:text-5xl font-serif font-extrabold text-luxury-text leading-tight uppercase">
-            A Manufacture of Precise Dreams
-          </h2>
-          <p className="text-luxury-muted text-sm sm:text-base leading-relaxed font-light">
-            Founded by Georges Favre-Jacot in Le Locle, Switzerland, KHRONIQ consolidated all watchmaking trades under one roof—creating the first integrated Manufacture. Every chronograph wheel, balance spring, and casing reflects our unrelenting drive for precision.
-          </p>
-          <div className="grid grid-cols-3 gap-6 pt-6 text-center">
-            <div className="border-r border-luxury-text/10 space-y-1">
-              <span className="text-3xl sm:text-4xl font-extrabold text-luxury-gold-dark">36K</span>
-              <p className="text-xs text-luxury-muted uppercase tracking-widest">vibrations/hour</p>
-            </div>
-            <div className="border-r border-luxury-text/10 space-y-1">
-              <span className="text-3xl sm:text-4xl font-extrabold text-luxury-gold-dark">100%</span>
-              <p className="text-xs text-luxury-muted uppercase tracking-widest">Swiss Made</p>
-            </div>
-            <div className="space-y-1">
-              <span className="text-3xl sm:text-4xl font-extrabold text-luxury-gold-dark">2,300+</span>
-              <p className="text-xs text-luxury-muted uppercase tracking-widest">chronometry prizes</p>
-            </div>
-          </div>
-        </div>
 
-        <div className="h-[500px] bg-luxury-bg/50 border border-luxury-text/5 rounded-md overflow-hidden relative p-0">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover relative z-10"
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 w-full px-4 sm:px-8 lg:px-12">
+            {featured.map((product, idx) => (
+              <motion.div key={product.id}
+                initial={{ opacity: 0, y: 52, scale: 0.92 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: '-30px' }}
+                transition={{ duration: 0.6, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ y: -10, scale: 1.04, transition: { duration: 0.2 } }}>
+                <ProductCard product={product} onPageChange={onPageChange} />
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* ══════════ BRAND STORY ══════════
+            Spinning rings bg + video zoom-in + stats spring pop */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.section
+            className="grid grid-cols-1 lg:grid-cols-2 gap-16 bg-white border border-luxury-text/5 p-10 sm:p-24 rounded-xl items-center shadow-md overflow-hidden relative"
+            initial={{ opacity: 0, y: 48 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
           >
-            <source src="/assets/manufacture.mp4" type="video/mp4" />
-            Your browser does not support HTML5 video.
-          </video>
+            {/* Decorative rings */}
+            <motion.div className="absolute -top-36 -right-36 w-96 h-96 rounded-full border border-luxury-gold/10 pointer-events-none"
+              animate={{ rotate: [0, 360] }} transition={{ duration: 32, repeat: Infinity, ease: 'linear' }} />
+            <motion.div className="absolute -top-20 -right-20 w-56 h-56 rounded-full border border-luxury-gold/8 pointer-events-none"
+              animate={{ rotate: [360, 0] }} transition={{ duration: 22, repeat: Infinity, ease: 'linear' }} />
+
+            {/* Left column */}
+            <div className="space-y-8 relative">
+              <Reveal dir="left" delay={0}>
+                <div className="flex items-center gap-2 text-luxury-gold-dark">
+                  <motion.div animate={{ rotate: [0, 12, -12, 0] }} transition={{ duration: 4, repeat: Infinity }}><Award size={20} /></motion.div>
+                  <span className="text-xs font-bold tracking-widest uppercase">Genuine Craftsmanship</span>
+                </div>
+              </Reveal>
+              <Reveal dir="left" delay={0.1}>
+                <h2 className="text-4xl sm:text-5xl font-serif font-extrabold text-luxury-text leading-tight uppercase">
+                  A Manufacture of<br />Precise Dreams
+                </h2>
+              </Reveal>
+              <Reveal dir="left" delay={0.2}>
+                <p className="text-luxury-muted text-sm sm:text-base leading-relaxed font-light">
+                  Founded by Georges Favre-Jacot in Le Locle, Switzerland, KHRONIQ consolidated all watchmaking trades under one roof—creating the first integrated Manufacture. Every chronograph wheel, balance spring, and casing reflects our unrelenting drive for precision.
+                </p>
+              </Reveal>
+
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-6 pt-4 text-center">
+                {stats.map(({ raw, suffix, label }, i) => (
+                  <motion.div key={i}
+                    className={i < 2 ? 'border-r border-luxury-text/10 space-y-1' : 'space-y-1'}
+                    initial={{ opacity: 0, scale: 0.65, y: 20 }}
+                    whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.3 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                    whileHover={{ scale: 1.14, transition: { duration: 0.15 } }}>
+                    <span className="text-3xl sm:text-4xl font-extrabold text-luxury-gold-dark block">
+                      <AnimatedCounter value={raw} suffix={suffix} />
+                    </span>
+                    <p className="text-[10px] text-luxury-muted uppercase tracking-widest">{label}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right column — video */}
+            <Reveal dir="right" delay={0.12} className="h-[500px] rounded-lg overflow-hidden relative shadow-xl">
+              <motion.div className="absolute inset-0 z-10 pointer-events-none"
+                style={{ background: 'linear-gradient(135deg,rgba(197,168,128,0.12) 0%,transparent 60%)' }}
+                animate={{ opacity: [0.4, 0.85, 0.4] }} transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }} />
+              <motion.video autoPlay loop muted playsInline className="w-full h-full object-cover"
+                initial={{ scale: 1.1 }} whileInView={{ scale: 1 }} viewport={{ once: true }}
+                transition={{ duration: 1.3, ease: [0.22, 1, 0.36, 1] }}>
+                <source src="/assets/manufacture.mp4" type="video/mp4" />
+              </motion.video>
+            </Reveal>
+          </motion.section>
         </div>
-      </section>
-
-      </div> {/* Closing standard alignment container */}
-
-      </div> {/* Closing space-y-24 pb-12 div */}
-
+      </div>
     </>
   );
 }

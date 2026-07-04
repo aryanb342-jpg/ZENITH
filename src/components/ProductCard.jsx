@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addToCart, toggleWishlist, selectCurrentCurrency, formatPrice } from '../store/slices/watchSlice';
 import { ShoppingBag, Heart, Star } from 'lucide-react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
 export default function ProductCard({ product, onPageChange }) {
   const dispatch = useDispatch();
@@ -9,20 +10,30 @@ export default function ProductCard({ product, onPageChange }) {
   const currentCurrency = useSelector(selectCurrentCurrency);
   const isWishlisted = wishlist.includes(product.id);
 
-  // Calculate average rating
   const approvedReviews = product.reviews?.filter(r => r.status === 'approved') || [];
   const averageRating = approvedReviews.length > 0
     ? (approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length).toFixed(1)
     : null;
 
+  /* ── 3-D tilt on hover ── */
+  const cardRef = useRef(null);
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const rotateX = useSpring(useTransform(rawY, [-1, 1], [8, -8]), { stiffness: 180, damping: 18 });
+  const rotateY = useSpring(useTransform(rawX, [-1, 1], [-8, 8]), { stiffness: 180, damping: 18 });
+
+  const handleMove = (e) => {
+    const rect = cardRef.current.getBoundingClientRect();
+    rawX.set(((e.clientX - rect.left) / rect.width) * 2 - 1);
+    rawY.set(((e.clientY - rect.top) / rect.height) * 2 - 1);
+  };
+  const handleLeave = () => { rawX.set(0); rawY.set(0); };
+
   const handleAddToCart = (e) => {
     e.stopPropagation();
     const result = dispatch(addToCart(product.id, 1));
-    if (result.success) {
-      alert(`${product.name} added to cart!`);
-    } else {
-      alert(result.message);
-    }
+    if (result.success) alert(`${product.name} added to cart!`);
+    else alert(result.message);
   };
 
   const handleWishlistToggle = (e) => {
@@ -37,32 +48,55 @@ export default function ProductCard({ product, onPageChange }) {
   const specLine = specItems.length > 0 ? specItems.join(' • ') : 'Swiss Quartz';
 
   return (
-    <div 
+    <motion.div
+      ref={cardRef}
       onClick={() => onPageChange('product-detail', { id: product.id })}
-      className="group relative flex flex-col h-full cursor-pointer bg-transparent transition-all duration-300"
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      style={{ rotateX, rotateY, transformStyle: 'preserve-3d', perspective: 800 }}
+      className="group relative flex flex-col h-full cursor-pointer bg-transparent"
+      whileHover={{ z: 20 }}
+      transition={{ type: 'spring', stiffness: 200, damping: 20 }}
     >
-      {/* Wishlist Button (Minimalist Wireframe Heart matching Tissot) */}
-      <button
+      {/* Wishlist */}
+      <motion.button
         onClick={handleWishlistToggle}
-        className="absolute top-4 right-4 z-10 p-1 text-luxury-text hover:text-luxury-red transition duration-300 focus:outline-none"
+        className="absolute top-4 right-4 z-10 p-1 focus:outline-none"
+        whileHover={{ scale: 1.2 }}
+        whileTap={{ scale: 0.85 }}
       >
-        <Heart 
-          size={18} 
-          className="transition duration-300 text-neutral-400 hover:text-[#e10600]" 
-          fill={isWishlisted ? "#e10600" : "none"} 
-          stroke={isWishlisted ? "#e10600" : "currentColor"} 
-        />
-      </button>
+        <motion.div
+          animate={isWishlisted ? { scale: [1, 1.4, 1] } : {}}
+          transition={{ duration: 0.35 }}
+        >
+          <Heart
+            size={18}
+            className="transition duration-300"
+            fill={isWishlisted ? '#e10600' : 'none'}
+            stroke={isWishlisted ? '#e10600' : 'currentColor'}
+            style={{ color: isWishlisted ? '#e10600' : '#a3a3a3' }}
+          />
+        </motion.div>
+      </motion.button>
 
-      {/* Image container (1:1 ratio covering the entire block) */}
-      <div className="aspect-square bg-[#f6f6f6] rounded-sm overflow-hidden relative flex items-center justify-center p-0">
-        <img
+      {/* Image */}
+      <div className="aspect-square bg-[#f6f6f6] rounded-sm overflow-hidden relative flex items-center justify-center">
+        <motion.img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover"
+          whileHover={{ scale: 1.09 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
         />
-        
-        {/* Out of Stock Overlay */}
+
+        {/* Hover shimmer */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent pointer-events-none"
+          initial={{ x: '-120%' }}
+          whileHover={{ x: '120%' }}
+          transition={{ duration: 0.55, ease: 'easeInOut' }}
+        />
+
         {product.stock === 0 && (
           <div className="absolute inset-0 bg-[#f6f6f6]/80 flex items-center justify-center">
             <span className="text-luxury-red font-bold text-[10px] tracking-widest uppercase border border-luxury-red px-2.5 py-1">
@@ -72,20 +106,30 @@ export default function ProductCard({ product, onPageChange }) {
         )}
       </div>
 
-      {/* Text Details (Clean, left-aligned, no border, matching the Tissot layout) */}
-      <div className="pt-3 pb-2 bg-transparent space-y-1 flex flex-col justify-between flex-1">
+      {/* Details */}
+      <motion.div
+        className="pt-3 pb-2 bg-transparent space-y-1 flex flex-col justify-between flex-1"
+        initial={{ opacity: 0.85 }}
+        whileHover={{ opacity: 1 }}
+      >
         <div className="space-y-0.5">
-          <h3 className="text-luxury-text text-sm font-semibold tracking-wide group-hover:text-luxury-gold-dark transition duration-200 line-clamp-1">
+          <motion.h3
+            className="text-luxury-text text-sm font-semibold tracking-wide line-clamp-1"
+            whileHover={{ color: '#93744d', x: 2 }}
+            transition={{ duration: 0.2 }}
+          >
             {product.name}
-          </h3>
-          <p className="text-[11px] text-luxury-muted font-normal tracking-wide">
-            {specLine}
-          </p>
+          </motion.h3>
+          <p className="text-[11px] text-luxury-muted font-normal tracking-wide">{specLine}</p>
         </div>
-        <p className="text-luxury-text text-xs sm:text-sm font-semibold pt-1">
+        <motion.p
+          className="text-luxury-text text-xs sm:text-sm font-semibold pt-1"
+          whileHover={{ scale: 1.04 }}
+          style={{ originX: 0 }}
+        >
           {formatPrice(product.price, currentCurrency)}
-        </p>
-      </div>
-    </div>
+        </motion.p>
+      </motion.div>
+    </motion.div>
   );
 }
