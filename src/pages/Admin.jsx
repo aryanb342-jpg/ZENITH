@@ -7,7 +7,9 @@ import {
   deleteProduct, 
   addCoupon, 
   deleteCoupon, 
-  moderateReview 
+  moderateReview,
+  selectCurrentCurrency,
+  formatPrice
 } from '../store/slices/watchSlice';
 import { 
   BarChart3, Plus, Edit, Trash2, Check, X, Tag, Star, 
@@ -21,6 +23,7 @@ export default function Admin({ onPageChange }) {
   const orders = useSelector(state => state.watch.orders);
   const coupons = useSelector(state => state.watch.coupons);
   const currentUser = useSelector(state => state.watch.currentUser);
+  const currentCurrency = useSelector(selectCurrentCurrency);
 
   // Active Admin Sub-Tab
   const [activeTab, setActiveTab] = useState('analytics'); // analytics | products | orders | coupons | reviews
@@ -208,7 +211,7 @@ export default function Admin({ onPageChange }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-luxury-gray border border-white/5 p-6 rounded-md space-y-2">
               <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Gross Sales Revenue</span>
-              <p className="text-2xl font-extrabold text-luxury-gold">${totalSales.toLocaleString()}</p>
+              <p className="text-2xl font-extrabold text-luxury-gold">{formatPrice(totalSales, currentCurrency)}</p>
               <span className="text-[9px] text-emerald-400 flex items-center space-x-1 font-medium">
                 <ArrowUpRight size={10} />
                 <span>+12.4% vs last week</span>
@@ -535,7 +538,7 @@ export default function Admin({ onPageChange }) {
                       <span className="font-semibold text-white truncate max-w-xs">{p.name}</span>
                     </td>
                     <td className="p-4 uppercase tracking-wider text-[10px] text-gray-400">{p.category}</td>
-                    <td className="p-4 font-bold text-white">${p.price.toLocaleString()}</td>
+                    <td className="p-4 font-bold text-white">{formatPrice(p.price, currentCurrency)}</td>
                     <td className="p-4">
                       <span className={`font-semibold ${p.stock === 0 ? 'text-luxury-red font-bold' : 'text-gray-300'}`}>
                         {p.stock === 0 ? 'SOLD OUT' : `${p.stock} units`}
@@ -597,7 +600,7 @@ export default function Admin({ onPageChange }) {
                           {o.items.map(item => `${item.name} (x${item.quantity})`).join(', ')}
                         </p>
                       </td>
-                      <td className="p-4 font-bold text-luxury-gold">${o.total.toLocaleString()}</td>
+                      <td className="p-4 font-bold text-luxury-gold">{formatPrice(o.total, currentCurrency)}</td>
                       <td className="p-4">
                         <select
                           value={o.status}
