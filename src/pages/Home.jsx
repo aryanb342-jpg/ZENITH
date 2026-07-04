@@ -535,20 +535,35 @@ export default function Home({ onPageChange }) {
 
       {/* ══════════ COLLECTIONS ══════════
           Each card: different enter anim + full 3-D mouse-track tilt + image parallax */}
-      <section className="w-full px-4 sm:px-8 lg:px-12 pt-32 pb-24 space-y-14">
-        <div className="text-center max-w-2xl mx-auto space-y-3">
+      <section className="relative w-full px-4 sm:px-8 lg:px-12 pt-32 pb-24 bg-[#1c1a17] overflow-hidden space-y-14">
+        {/* Ambient Video Background covering the section */}
+        <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover opacity-35"
+          >
+            <source src="/assets/explore.mp4" type="video/mp4" />
+            Your browser does not support HTML5 video.
+          </video>
+          <div className="absolute inset-0 bg-black/25" />
+        </div>
+
+        <div className="relative z-10 text-center max-w-2xl mx-auto space-y-3">
           <Reveal dir="flip">
-            <p className="text-xs text-luxury-gold-dark font-black tracking-[0.22em] uppercase">The Pillars of KHRONIQ</p>
+            <p className="text-xs text-luxury-gold font-black tracking-[0.22em] uppercase">The Pillars of KHRONIQ</p>
           </Reveal>
           <SlideReveal delay={0.1}>
-            <h2 className="text-4xl sm:text-5xl font-black font-serif text-luxury-text tracking-wide uppercase">Explore Collections</h2>
+            <h2 className="text-4xl sm:text-5xl font-black font-serif text-white tracking-wide uppercase">Explore Collections</h2>
           </SlideReveal>
-          <motion.div className="w-16 h-[3px] bg-luxury-gold-dark mx-auto"
+          <motion.div className="w-16 h-[3px] bg-luxury-gold mx-auto"
             initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }}
             transition={{ duration: 0.75, delay: 0.28 }} />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8">
           {collections.map((col, idx) => (
             <CollectionCard key={idx} col={col} idx={idx} onPageChange={onPageChange} />
           ))}
