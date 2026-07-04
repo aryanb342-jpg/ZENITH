@@ -4,7 +4,7 @@ import { addToCart, toggleWishlist, selectCurrentCurrency, formatPrice } from '.
 import { ShoppingBag, Heart, Star } from 'lucide-react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
-export default function ProductCard({ product, onPageChange }) {
+export default function ProductCard({ product, onPageChange, showRemove = false }) {
   const dispatch = useDispatch();
   const wishlist = useSelector(state => state.watch.wishlist);
   const currentCurrency = useSelector(selectCurrentCurrency);
@@ -135,6 +135,14 @@ export default function ProductCard({ product, onPageChange }) {
         >
           {formatPrice(product.price, currentCurrency)}
         </motion.p>
+        {showRemove && (
+          <button
+            onClick={handleWishlistToggle}
+            className="wishlist-btn mt-2.5 w-full py-2 bg-transparent border border-red-500/25 text-red-500 hover:bg-red-500 hover:text-white text-[10px] font-bold tracking-widest uppercase transition duration-300 cursor-pointer rounded-sm"
+          >
+            Remove
+          </button>
+        )}
       </motion.div>
     </motion.div>
   );

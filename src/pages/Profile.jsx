@@ -284,6 +284,7 @@ export default function Profile({ params, onPageChange }) {
                       key={product.id}
                       product={product}
                       onPageChange={onPageChange}
+                      showRemove={true}
                     />
                   ))}
                 </div>
