@@ -1,14 +1,18 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addToCart, toggleWishlist, selectCurrentCurrency, formatPrice } from '../store/slices/watchSlice';
 import { ShoppingBag, Heart, Star } from 'lucide-react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 
 export default function ProductCard({ product, onPageChange, showRemove = false }) {
   const dispatch = useDispatch();
   const wishlist = useSelector(state => state.watch.wishlist);
   const currentCurrency = useSelector(selectCurrentCurrency);
   const isWishlisted = wishlist.includes(product.id);
+
+  /* Toast state */
+  const [toast, setToast] = useState(null); // 'added' | 'removed' | null
+  const toastTimer = useRef(null);
 
   const approvedReviews = product.reviews?.filter(r => r.status === 'approved') || [];
   const averageRating = approvedReviews.length > 0
@@ -39,7 +43,13 @@ export default function ProductCard({ product, onPageChange, showRemove = false 
   const handleWishlistToggle = (e) => {
     e.stopPropagation();
     e.preventDefault();
+    const willAdd = !isWishlisted;
     dispatch(toggleWishlist(product.id));
+
+    /* Show toast */
+    clearTimeout(toastTimer.current);
+    setToast(willAdd ? 'added' : 'removed');
+    toastTimer.current = setTimeout(() => setToast(null), 2000);
   };
 
   const specItems = [];
@@ -52,9 +62,7 @@ export default function ProductCard({ product, onPageChange, showRemove = false 
     <motion.div
       ref={cardRef}
       onClick={(e) => {
-        if (e.target.closest('.wishlist-btn')) {
-          return;
-        }
+        if (e.target.closest('.wishlist-btn')) return;
         onPageChange('product-detail', { id: product.id });
       }}
       onMouseMove={handleMove}
@@ -91,27 +99,76 @@ export default function ProductCard({ product, onPageChange, showRemove = false 
         )}
       </div>
 
-      {/* Wishlist */}
-      <motion.button
-        onClick={handleWishlistToggle}
-        className="wishlist-btn absolute top-3 right-3 z-20 p-2.5 focus:outline-none"
-        style={{ transform: 'translateZ(30px)' }}
-        whileHover={{ scale: 1.2 }}
-        whileTap={{ scale: 0.85 }}
-      >
-        <motion.div
-          animate={isWishlisted ? { scale: [1, 1.4, 1] } : {}}
-          transition={{ duration: 0.35 }}
+      {/* ── Wishlist heart button ── */}
+      <div className="wishlist-btn absolute top-3 right-3 z-20" style={{ transform: 'translateZ(30px)' }}>
+        <motion.button
+          onClick={handleWishlistToggle}
+          className="relative p-2.5 focus:outline-none"
+          whileHover={{ scale: 1.2 }}
+          whileTap={{ scale: 0.8 }}
         >
-          <Heart
-            size={18}
-            className="transition duration-300"
-            fill={isWishlisted ? '#e10600' : 'none'}
-            stroke={isWishlisted ? '#e10600' : 'currentColor'}
-            style={{ color: isWishlisted ? '#e10600' : '#a3a3a3' }}
-          />
-        </motion.div>
-      </motion.button>
+          {/* Heart burst rings on add */}
+          <AnimatePresence>
+            {isWishlisted && (
+              <>
+                <motion.span
+                  key="ring1"
+                  className="absolute inset-0 rounded-full border-2 border-red-500 pointer-events-none"
+                  initial={{ scale: 0.6, opacity: 0.8 }}
+                  animate={{ scale: 2.2, opacity: 0 }}
+                  exit={{}}
+                  transition={{ duration: 0.55, ease: 'easeOut' }}
+                />
+                <motion.span
+                  key="ring2"
+                  className="absolute inset-0 rounded-full border border-red-300 pointer-events-none"
+                  initial={{ scale: 0.6, opacity: 0.6 }}
+                  animate={{ scale: 2.8, opacity: 0 }}
+                  exit={{}}
+                  transition={{ duration: 0.7, delay: 0.08, ease: 'easeOut' }}
+                />
+              </>
+            )}
+          </AnimatePresence>
+
+          {/* Heart icon */}
+          <motion.div
+            animate={
+              isWishlisted
+                ? { scale: [1, 1.5, 0.9, 1.15, 1], rotate: [0, -12, 10, -5, 0] }
+                : { scale: 1, rotate: 0 }
+            }
+            transition={{ duration: 0.45, ease: 'easeOut' }}
+          >
+            <Heart
+              size={18}
+              fill={isWishlisted ? '#e10600' : 'none'}
+              stroke={isWishlisted ? '#e10600' : '#a3a3a3'}
+              style={{ filter: isWishlisted ? 'drop-shadow(0 0 6px rgba(225,6,0,0.5))' : 'none' }}
+            />
+          </motion.div>
+        </motion.button>
+
+        {/* Floating toast pill */}
+        <AnimatePresence>
+          {toast && (
+            <motion.div
+              key={toast}
+              className="absolute top-[-10px] right-9 whitespace-nowrap rounded-full px-3 py-1 text-[10px] font-bold tracking-wide shadow-lg pointer-events-none z-30"
+              style={{
+                background: toast === 'added' ? '#e10600' : '#6b7280',
+                color: '#fff',
+              }}
+              initial={{ opacity: 0, x: 8, scale: 0.85 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 8, scale: 0.85 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {toast === 'added' ? '❤️ Wishlisted' : 'Removed'}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Details */}
       <motion.div
