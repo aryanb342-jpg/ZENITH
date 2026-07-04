@@ -338,7 +338,7 @@ function CollectionCard({ col, idx, onPageChange }) {
         </motion.span>
         <motion.h3
           className="text-3xl sm:text-4xl font-serif font-black uppercase"
-          animate={{ color: hov ? '#10b981' : '#000000', y: hov ? -3 : 0 }}
+          animate={{ color: hov ? '#1e40af' : '#000000', y: hov ? -3 : 0 }}
           transition={{ duration: 0.2 }}
         >
           {col.name}
