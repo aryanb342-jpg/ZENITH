@@ -779,23 +779,23 @@ export default function Home({ onPageChange }) {
         {/* ══════════ SPLIT VIDEO SHOWCASE SECTION ══════════ */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.section
-            className="grid grid-cols-1 lg:grid-cols-3 gap-0 bg-white border border-luxury-text/5 rounded-xl overflow-hidden shadow-md items-center"
+            className="flex flex-col lg:flex-row gap-8 bg-white border border-luxury-text/5 rounded-xl overflow-hidden shadow-md items-center justify-between p-6 sm:p-10"
             initial={{ opacity: 0, y: 48 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* Left Column: Text (1/3 width) */}
-            <div className="lg:col-span-1 flex flex-col items-center justify-center p-8 sm:p-12 bg-white text-center h-[400px]">
+            {/* Left Column: Text (takes remaining space) */}
+            <div className="flex-1 flex flex-col items-center lg:items-start justify-center text-center lg:text-left p-6 space-y-4">
               <Reveal dir="left">
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-black text-black tracking-[0.2em] uppercase leading-tight">
+                <h2 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-black text-black tracking-[0.2em] uppercase leading-tight">
                   KHRONIQ<br />UPDATES
                 </h2>
               </Reveal>
             </div>
 
-            {/* Right Column: Normal Video (2/3 width) */}
-            <div className="lg:col-span-2 h-[400px] w-full relative">
+            {/* Right Column: Normal Video (adjusted to exact 720x1280 aspect ratio) */}
+            <div className="w-full lg:w-auto h-[600px] aspect-[720/1280] rounded-lg overflow-hidden shadow-lg relative bg-transparent flex-shrink-0">
               <video 
                 autoPlay 
                 loop 
