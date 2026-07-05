@@ -795,13 +795,13 @@ export default function Home({ onPageChange }) {
             </div>
 
             {/* Right Column: Normal Video (2/3 width) */}
-            <div className="lg:col-span-2 h-[650px] w-full relative">
+            <div className="lg:col-span-2 h-[650px] w-full relative bg-black">
               <video 
                 autoPlay 
                 loop 
                 muted 
                 playsInline 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               >
                 <source src="/assets/quote_board.mp4" type="video/mp4" />
               </video>
