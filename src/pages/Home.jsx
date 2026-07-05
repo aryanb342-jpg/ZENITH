@@ -776,32 +776,38 @@ export default function Home({ onPageChange }) {
           </div>
         </section>
 
-        {/* ══════════ FULL SCREEN VIDEO SHOWCASE SECTION ══════════ */}
-        <section className="relative w-full h-[600px] overflow-hidden bg-black flex items-center justify-center">
-          {/* Background Video */}
-          <div className="absolute inset-0 z-0">
-            <video 
-              autoPlay 
-              loop 
-              muted 
-              playsInline 
-              className="w-full h-full object-cover blur-[4px] scale-105 opacity-80"
-            >
-              <source src="/assets/quote_board.mp4" type="video/mp4" />
-            </video>
-            {/* Dark overlay to make text highly legible */}
-            <div className="absolute inset-0 bg-black/40 z-[1]" />
-          </div>
+        {/* ══════════ SPLIT VIDEO SHOWCASE SECTION ══════════ */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.section
+            className="grid grid-cols-1 lg:grid-cols-2 gap-0 bg-white border border-luxury-text/5 rounded-xl overflow-hidden shadow-md items-center"
+            initial={{ opacity: 0, y: 48 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* Left Column: Text */}
+            <div className="flex flex-col items-center justify-center p-10 sm:p-24 bg-white text-center h-[500px]">
+              <Reveal dir="left">
+                <h2 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-black text-black tracking-[0.2em] uppercase leading-tight">
+                  KHRONIQ<br />UPDATES
+                </h2>
+              </Reveal>
+            </div>
 
-          {/* White text overlay */}
-          <div className="relative z-10 text-center px-4">
-            <Reveal dir="up">
-              <h2 className="text-4xl sm:text-6xl md:text-7xl font-serif font-black text-white tracking-[0.2em] uppercase drop-shadow-lg">
-                KHRONIQ UPDATES
-              </h2>
-            </Reveal>
-          </div>
-        </section>
+            {/* Right Column: Normal Video */}
+            <div className="h-[500px] w-full relative">
+              <video 
+                autoPlay 
+                loop 
+                muted 
+                playsInline 
+                className="w-full h-full object-cover"
+              >
+                <source src="/assets/quote_board.mp4" type="video/mp4" />
+              </video>
+            </div>
+          </motion.section>
+        </div>
       </div>
     </>
   );
