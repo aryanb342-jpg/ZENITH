@@ -816,8 +816,8 @@ export default function Home({ onPageChange }) {
             </div>
 
             {/* Right Column: Two Normal Videos side-by-side (adjusted to exact 720x1280 aspect ratio) */}
-            <div className="flex flex-col sm:flex-row gap-6 w-full lg:w-auto flex-shrink-0">
-              <div className="w-full sm:w-auto h-[600px] aspect-[720/1280] rounded-lg overflow-hidden shadow-lg relative bg-transparent flex-shrink-0">
+            <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto flex-shrink-0">
+              <div className="w-full sm:w-auto h-[720px] aspect-[720/1280] rounded-lg overflow-hidden shadow-lg relative bg-transparent flex-shrink-0">
                 <video 
                   autoPlay 
                   loop 
@@ -828,7 +828,7 @@ export default function Home({ onPageChange }) {
                   <source src="/assets/quote_board.mp4" type="video/mp4" />
                 </video>
               </div>
-              <div className="w-full sm:w-auto h-[600px] aspect-[720/1280] rounded-lg overflow-hidden shadow-lg relative bg-transparent flex-shrink-0">
+              <div className="w-full sm:w-auto h-[720px] aspect-[720/1280] rounded-lg overflow-hidden shadow-lg relative bg-transparent flex-shrink-0">
                 <video 
                   autoPlay 
                   loop 
