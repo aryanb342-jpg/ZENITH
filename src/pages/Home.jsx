@@ -400,6 +400,31 @@ export default function Home({ onPageChange }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleCards, setVisibleCards] = useState(4);
   const [showUpdates, setShowUpdates] = useState(false);
+  const [brandUpdates, setBrandUpdates] = useState([]);
+
+  useEffect(() => {
+    const fetchUpdates = async () => {
+      try {
+        const res = await fetch('/api/brand-updates');
+        const data = await res.json();
+        if (data && data.success) {
+          setBrandUpdates(data.updates);
+        }
+      } catch (err) {
+        console.error("Error fetching brand updates:", err);
+      }
+    };
+    fetchUpdates();
+  }, []);
+
+  const defaultUpdates = [
+    { title: "Grand Boutique Launch", detail: "Geneva flagship store grand opening scheduled for October 15th." },
+    { title: "Limited Titanium Caliber", detail: "Exclusive high-frequency titanium editions starting to ship next month." },
+    { title: "Zero Carbon Milestone", detail: "Le Locle manufacture officially certified as a 100% net-zero operation." },
+    { title: "Lifetime Precision Care", detail: "Introducing extended lifetime service programs for certified chronometers." }
+  ];
+
+  const displayedUpdates = brandUpdates.length > 0 ? brandUpdates : defaultUpdates;
 
   useEffect(() => {
     const handleResize = () => {
@@ -832,12 +857,7 @@ export default function Home({ onPageChange }) {
                 className="overflow-hidden w-full animate-gpu"
               >
                 <ul className="space-y-4 text-left w-full mt-4 max-w-sm">
-                  {[
-                    { title: "Grand Boutique Launch", detail: "Geneva flagship store grand opening scheduled for October 15th." },
-                    { title: "Limited Titanium Caliber", detail: "Exclusive high-frequency titanium editions starting to ship next month." },
-                    { title: "Zero Carbon Milestone", detail: "Le Locle manufacture officially certified as a 100% net-zero operation." },
-                    { title: "Lifetime Precision Care", detail: "Introducing extended lifetime service programs for certified chronometers." }
-                  ].map((item, idx) => (
+                  {displayedUpdates.map((item, idx) => (
                     <motion.li 
                       key={idx}
                       className="flex items-start gap-3"

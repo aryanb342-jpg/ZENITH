@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import Product from './models/Product.js';
 import User from './models/User.js';
 import Coupon from './models/Coupon.js';
+import BrandUpdate from './models/BrandUpdate.js';
 
 // Import Routes
 import authRoutes from './routes/auth.js';
@@ -15,6 +16,7 @@ import orderRoutes from './routes/orders.js';
 import couponRoutes from './routes/coupons.js';
 import cartRoutes from './routes/cart.js';
 import wishlistRoutes from './routes/wishlist.js';
+import brandUpdateRoutes from './routes/brandUpdates.js';
 
 dotenv.config();
 
@@ -62,6 +64,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/brand-updates', brandUpdateRoutes);
 
 // Base Endpoint
 app.get('/api', (req, res) => {
@@ -279,6 +282,19 @@ const seedDatabase = async () => {
         role: 'admin'
       });
       console.log('Database Seeding: Default admin user (admin@khroniq.com / admin123) successfully seeded!');
+    }
+
+    // 4. Seed Default Brand Updates
+    const updateCount = await BrandUpdate.countDocuments();
+    if (updateCount === 0) {
+      const initialUpdates = [
+        { title: "Grand Boutique Launch", detail: "Geneva flagship store grand opening scheduled for October 15th.", approved: true },
+        { title: "Limited Titanium Caliber", detail: "Exclusive high-frequency titanium editions starting to ship next month.", approved: true },
+        { title: "Zero Carbon Milestone", detail: "Le Locle manufacture officially certified as a 100% net-zero operation.", approved: true },
+        { title: "Lifetime Precision Care", detail: "Introducing extended lifetime service programs for certified chronometers.", approved: true }
+      ];
+      await BrandUpdate.insertMany(initialUpdates);
+      console.log('Database Seeding: Brand Updates successfully seeded!');
     }
 
   } catch (error) {

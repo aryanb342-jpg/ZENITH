@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   updateOrderStatus, 
@@ -15,7 +15,7 @@ import {
 import { 
   BarChart3, Plus, Edit, Trash2, Check, X, Tag, Star, 
   Package, AlertTriangle, ShieldAlert, ArrowLeft, ArrowUpRight,
-  CheckCircle2, LogOut
+  CheckCircle2, LogOut, Newspaper
 } from 'lucide-react';
 
 export default function Admin({ onPageChange }) {
@@ -56,6 +56,143 @@ export default function Admin({ onPageChange }) {
   const [newCouponCode, setNewCouponCode] = useState('');
   const [newCouponDiscount, setNewCouponDiscount] = useState('');
   const [newCouponDesc, setNewCouponDesc] = useState('');
+
+  // --- BRAND UPDATES ADMIN STATES & OPERATIONS ---
+  const [adminUpdates, setAdminUpdates] = useState([]);
+  const [showAddUpdateForm, setShowAddUpdateForm] = useState(false);
+  const [newUpdate, setNewUpdate] = useState({ title: '', detail: '', approved: true });
+  const [editingUpdateId, setEditingUpdateId] = useState(null);
+  const [editUpdateForm, setEditUpdateForm] = useState(null);
+
+  const fetchAdminUpdates = async () => {
+    try {
+      const token = localStorage.getItem('khroniq_token');
+      const res = await fetch('/api/brand-updates/admin', {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
+        }
+      });
+      const data = await res.json();
+      if (data && data.success) {
+        setAdminUpdates(data.updates);
+      }
+    } catch (err) {
+      console.error('Error fetching admin updates:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (currentUser && currentUser.role === 'admin' && activeTab === 'updates') {
+      fetchAdminUpdates();
+    }
+  }, [activeTab, currentUser]);
+
+  const handleCreateUpdate = async (e) => {
+    e.preventDefault();
+    if (!newUpdate.title || !newUpdate.detail) {
+      alert('Please fill out both Title and Details.');
+      return;
+    }
+    try {
+      const token = localStorage.getItem('khroniq_token');
+      const res = await fetch('/api/brand-updates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
+        },
+        body: JSON.stringify(newUpdate)
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Brand update created successfully!');
+        setShowAddUpdateForm(false);
+        setNewUpdate({ title: '', detail: '', approved: true });
+        fetchAdminUpdates();
+      } else {
+        alert(data.message || 'Failed to create update.');
+      }
+    } catch (err) {
+      console.error('Create update error:', err);
+    }
+  };
+
+  const handleToggleUpdateApproval = async (id, currentApproved) => {
+    try {
+      const token = localStorage.getItem('khroniq_token');
+      const res = await fetch(`/api/brand-updates/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
+        },
+        body: JSON.stringify({ approved: !currentApproved })
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchAdminUpdates();
+      } else {
+        alert(data.message || 'Failed to toggle approval.');
+      }
+    } catch (err) {
+      console.error('Toggle approval error:', err);
+    }
+  };
+
+  const handleEditUpdateInit = (update) => {
+    setEditingUpdateId(update.id || update._id);
+    setEditUpdateForm({ ...update });
+  };
+
+  const handleUpdateUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('khroniq_token');
+      const res = await fetch(`/api/brand-updates/${editingUpdateId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
+        },
+        body: JSON.stringify(editUpdateForm)
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Brand update edited successfully!');
+        setEditingUpdateId(null);
+        setEditUpdateForm(null);
+        fetchAdminUpdates();
+      } else {
+        alert(data.message || 'Failed to edit update.');
+      }
+    } catch (err) {
+      console.error('Edit update error:', err);
+    }
+  };
+
+  const handleDeleteUpdate = async (id) => {
+    if (!window.confirm('Delete this brand update permanently?')) return;
+    try {
+      const token = localStorage.getItem('khroniq_token');
+      const res = await fetch(`/api/brand-updates/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
+        }
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Brand update removed!');
+        fetchAdminUpdates();
+      } else {
+        alert(data.message || 'Failed to remove update.');
+      }
+    } catch (err) {
+      console.error('Delete update error:', err);
+    }
+  };
 
   // Validation checking for security
   if (!currentUser || currentUser.role !== 'admin') {
@@ -194,6 +331,7 @@ export default function Admin({ onPageChange }) {
           { key: 'orders', label: 'Order Dispatcher', icon: CheckCircle2 },
           { key: 'coupons', label: 'Coupon Builder', icon: Tag },
           { key: 'reviews', label: 'Reviews Manager', icon: Star },
+          { key: 'updates', label: 'Brand Updates', icon: Newspaper },
         ].map((tab) => {
           const Icon = tab.icon;
           return (
@@ -775,6 +913,182 @@ export default function Admin({ onPageChange }) {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* --- TAB CONTENT: BRAND UPDATES MANAGER --- */}
+      {activeTab === 'updates' && (
+        <div className="space-y-8">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-white">Brand Updates Manager</h3>
+            <button
+              onClick={() => {
+                setShowAddUpdateForm(!showAddUpdateForm);
+                setEditingUpdateId(null);
+              }}
+              className="px-4 py-2 bg-luxury-gold text-luxury-dark text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 transition hover:bg-luxury-gold-dark cursor-pointer rounded-sm"
+            >
+              <Plus size={14} />
+              <span>{showAddUpdateForm ? 'Cancel Add' : 'Add New Update'}</span>
+            </button>
+          </div>
+
+          {/* Form to Add New Update */}
+          {showAddUpdateForm && (
+            <div className="bg-luxury-gray border border-white/5 p-6 rounded-md max-w-xl">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-white mb-4">Create Brand Update</h4>
+              <form onSubmit={handleCreateUpdate} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[9px] text-gray-400 font-bold uppercase tracking-widest block">Update Title</label>
+                  <input
+                    type="text"
+                    required
+                    value={newUpdate.title}
+                    onChange={(e) => setNewUpdate({ ...newUpdate, title: e.target.value })}
+                    placeholder="e.g. Geneva Flagship Opening"
+                    className="w-full bg-luxury-dark border border-white/10 rounded text-white p-2.5"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] text-gray-400 font-bold uppercase tracking-widest block">Update Detail Description</label>
+                  <textarea
+                    required
+                    rows={3}
+                    value={newUpdate.detail}
+                    onChange={(e) => setNewUpdate({ ...newUpdate, detail: e.target.value })}
+                    placeholder="Provide full description of the news milestone..."
+                    className="w-full bg-luxury-dark border border-white/10 rounded text-white p-2.5 resize-none"
+                  />
+                </div>
+                <div className="flex items-center space-x-2.5 pt-1">
+                  <input
+                    type="checkbox"
+                    id="newApproved"
+                    checked={newUpdate.approved}
+                    onChange={(e) => setNewUpdate({ ...newUpdate, approved: e.target.checked })}
+                    className="w-4 h-4 accent-luxury-gold cursor-pointer"
+                  />
+                  <label htmlFor="newApproved" className="text-xs text-gray-300 cursor-pointer select-none">
+                    Publish immediately (Approved)
+                  </label>
+                </div>
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-white text-luxury-dark font-bold text-xs tracking-widest uppercase hover:bg-luxury-gold transition cursor-pointer"
+                >
+                  Publish Update
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* Form to Edit Existing Update */}
+          {editingUpdateId && editUpdateForm && (
+            <div className="bg-luxury-gray border border-luxury-gold/20 p-6 rounded-md max-w-xl">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-white mb-4">Edit Brand Update</h4>
+              <form onSubmit={handleUpdateUpdate} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[9px] text-gray-400 font-bold uppercase tracking-widest block">Update Title</label>
+                  <input
+                    type="text"
+                    required
+                    value={editUpdateForm.title}
+                    onChange={(e) => setEditUpdateForm({ ...editUpdateForm, title: e.target.value })}
+                    className="w-full bg-luxury-dark border border-white/10 rounded text-white p-2.5"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] text-gray-400 font-bold uppercase tracking-widest block">Update Detail Description</label>
+                  <textarea
+                    required
+                    rows={3}
+                    value={editUpdateForm.detail}
+                    onChange={(e) => setEditUpdateForm({ ...editUpdateForm, detail: e.target.value })}
+                    className="w-full bg-luxury-dark border border-white/10 rounded text-white p-2.5 resize-none"
+                  />
+                </div>
+                <div className="flex items-center space-x-2.5 pt-1">
+                  <input
+                    type="checkbox"
+                    id="editApproved"
+                    checked={editUpdateForm.approved}
+                    onChange={(e) => setEditUpdateForm({ ...editUpdateForm, approved: e.target.checked })}
+                    className="w-4 h-4 accent-luxury-gold cursor-pointer"
+                  />
+                  <label htmlFor="editApproved" className="text-xs text-gray-300 cursor-pointer select-none">
+                    Approved (Visible to clients)
+                  </label>
+                </div>
+                <div className="flex space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingUpdateId(null);
+                      setEditUpdateForm(null);
+                    }}
+                    className="flex-1 py-3 bg-transparent border border-white/10 text-white font-bold text-xs tracking-widest uppercase hover:bg-white/5 transition cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-3 bg-luxury-gold text-luxury-dark font-bold text-xs tracking-widest uppercase hover:bg-luxury-gold-dark transition cursor-pointer"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* List of existing updates */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-white">Brand Updates Database</h4>
+            
+            {adminUpdates.length === 0 ? (
+              <p className="text-gray-400 text-xs italic p-6 text-center border border-dashed border-white/10 rounded">No brand updates found in database.</p>
+            ) : (
+              <div className="bg-luxury-gray border border-white/5 rounded-md divide-y divide-white/5">
+                {adminUpdates.map((up) => (
+                  <div key={up._id || up.id} className="p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2.5">
+                        <span className="text-white text-sm font-bold tracking-wider">{up.title}</span>
+                        <button
+                          onClick={() => handleToggleUpdateApproval(up._id || up.id, up.approved)}
+                          className={`text-[9px] font-bold px-2 py-0.5 rounded border transition cursor-pointer ${
+                            up.approved 
+                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                              : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
+                          }`}
+                        >
+                          {up.approved ? 'APPROVED & LIVE' : 'UNAPPROVED / HIDDEN'}
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-400 leading-relaxed font-light">{up.detail}</p>
+                    </div>
+
+                    <div className="flex space-x-2 flex-shrink-0">
+                      <button
+                        onClick={() => handleEditUpdateInit(up)}
+                        className="p-2 text-gray-400 hover:text-white transition hover:bg-white/5 rounded"
+                        title="Edit Update"
+                      >
+                        <Edit size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteUpdate(up._id || up.id)}
+                        className="p-2 text-gray-400 hover:text-luxury-red transition hover:bg-white/5 rounded"
+                        title="Delete Update"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
