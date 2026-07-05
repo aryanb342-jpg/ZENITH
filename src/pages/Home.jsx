@@ -776,72 +776,19 @@ export default function Home({ onPageChange }) {
           </div>
         </section>
 
-        {/* ══════════ BRAND STORY ══════════
-            Spinning rings bg + video zoom-in + stats spring pop */}
+        {/* ══════════ VIDEO SHOWCASE SECTION ══════════ */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.section
-            className="grid grid-cols-1 lg:grid-cols-2 gap-16 bg-white border border-luxury-text/5 p-10 sm:p-24 rounded-xl items-center shadow-md overflow-hidden relative"
-            initial={{ opacity: 0, y: 48 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {/* Decorative rings */}
-            <motion.div className="absolute -top-36 -right-36 w-96 h-96 rounded-full border border-luxury-gold/10 pointer-events-none"
-              animate={{ rotate: [0, 360] }} transition={{ duration: 32, repeat: Infinity, ease: 'linear' }} />
-            <motion.div className="absolute -top-20 -right-20 w-56 h-56 rounded-full border border-luxury-gold/8 pointer-events-none"
-              animate={{ rotate: [360, 0] }} transition={{ duration: 22, repeat: Infinity, ease: 'linear' }} />
-
-            {/* Left column */}
-            <div className="space-y-8 relative">
-              <Reveal dir="left" delay={0}>
-                <div className="flex items-center gap-2 text-luxury-gold-dark">
-                  <motion.div animate={{ rotate: [0, 12, -12, 0] }} transition={{ duration: 4, repeat: Infinity }}><Award size={20} /></motion.div>
-                  <span className="text-xs font-bold tracking-widest uppercase">Genuine Craftsmanship</span>
-                </div>
-              </Reveal>
-              <Reveal dir="left" delay={0.1}>
-                <h2 className="text-4xl sm:text-5xl font-serif font-extrabold text-luxury-text leading-tight uppercase">
-                  A Manufacture of<br />Precise Dreams
-                </h2>
-              </Reveal>
-              <Reveal dir="left" delay={0.2}>
-                <p className="text-luxury-muted text-sm sm:text-base leading-relaxed font-light">
-                  Founded by Georges Favre-Jacot in Le Locle, Switzerland, KHRONIQ consolidated all watchmaking trades under one roof—creating the first integrated Manufacture. Every chronograph wheel, balance spring, and casing reflects our unrelenting drive for precision.
-                </p>
-              </Reveal>
-
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-6 pt-4 text-center">
-                {stats.map(({ raw, suffix, label }, i) => (
-                  <motion.div key={i}
-                    className={i < 2 ? 'border-r border-luxury-text/10 space-y-1' : 'space-y-1'}
-                    initial={{ opacity: 0, scale: 0.65, y: 20 }}
-                    whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.3 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                    whileHover={{ scale: 1.14, transition: { duration: 0.15 } }}>
-                    <span className="text-3xl sm:text-4xl font-extrabold text-luxury-gold-dark block">
-                      <AnimatedCounter value={raw} suffix={suffix} />
-                    </span>
-                    <p className="text-[10px] text-luxury-muted uppercase tracking-widest">{label}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right column — video */}
-            <Reveal dir="right" delay={0.12} className="h-[500px] rounded-lg overflow-hidden relative shadow-xl">
-              <motion.div className="absolute inset-0 z-10 pointer-events-none"
-                style={{ background: 'linear-gradient(135deg,rgba(197,168,128,0.12) 0%,transparent 60%)' }}
-                animate={{ opacity: [0.4, 0.85, 0.4] }} transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }} />
-              <motion.video autoPlay loop muted playsInline className="w-full h-full object-cover"
-                initial={{ scale: 1.1 }} whileInView={{ scale: 1 }} viewport={{ once: true }}
-                transition={{ duration: 1.3, ease: [0.22, 1, 0.36, 1] }}>
-                <source src="/assets/manufacture.mp4" type="video/mp4" />
-              </motion.video>
-            </Reveal>
-          </motion.section>
+          <div className="w-full h-[650px] rounded-xl overflow-hidden shadow-2xl relative">
+            <video 
+              autoPlay 
+              loop 
+              muted 
+              playsInline 
+              className="w-full h-full object-cover"
+            >
+              <source src="/assets/quote_board.mp4" type="video/mp4" />
+            </video>
+          </div>
         </div>
       </div>
     </>
