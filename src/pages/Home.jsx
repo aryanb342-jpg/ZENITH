@@ -401,6 +401,7 @@ export default function Home({ onPageChange }) {
   const [visibleCards, setVisibleCards] = useState(4);
   const [showUpdates, setShowUpdates] = useState(false);
   const [brandUpdates, setBrandUpdates] = useState([]);
+  const [hoveredProduct, setHoveredProduct] = useState(null);
 
   useEffect(() => {
     const fetchUpdates = async () => {
@@ -739,25 +740,65 @@ export default function Home({ onPageChange }) {
         </motion.div>
       </div>
 
-      {/* ══════════ FEATURED PRODUCTS ══════════
-          Stagger reveal + hover pop lift + 3-D tilt inside ProductCard */}
+      {/* ══════════ FEATURED PRODUCTS ══════════ */}
       <div className="space-y-10 pb-12">
-        <section className="w-full py-10 space-y-8">
+        <section
+          className="w-full py-14 space-y-10 transition-colors duration-500 ease-in-out"
+          style={{
+            background: hoveredProduct
+              ? (() => {
+                  const cat = hoveredProduct.category?.toLowerCase() || '';
+                  return cat.includes('khronomaster') ? '#071c12'
+                    : cat.includes('defy')      ? '#060d1f'
+                    : cat.includes('heritage')  ? '#1c0e05'
+                    : cat.includes('elite')     ? '#1a1003'
+                    : '#12100a';
+                })()
+              : '#f9f8f6',
+          }}
+        >
+          {/* Section header — text flips to white on dark bg */}
           <div className="text-center max-w-2xl mx-auto space-y-3 px-4">
             <Reveal dir="up">
-              <p className="text-xs text-luxury-gold-dark font-black tracking-[0.22em] uppercase">Signature Catalog</p>
+              <p
+                className="text-xs font-black tracking-[0.22em] uppercase transition-colors duration-500"
+                style={{ color: hoveredProduct ? '#c8a96a' : '#b8975a' }}
+              >
+                Signature Catalog
+              </p>
             </Reveal>
             <SlideReveal delay={0.1}>
-              <h2 className="text-4xl sm:text-5xl font-black font-serif text-luxury-text tracking-wide uppercase">Featured Masterpieces</h2>
+              <h2
+                className="text-4xl sm:text-5xl font-black font-serif tracking-wide uppercase transition-colors duration-500"
+                style={{ color: hoveredProduct ? '#ffffff' : '#1c1a17' }}
+              >
+                Featured Masterpieces
+              </h2>
             </SlideReveal>
-            <motion.div className="w-16 h-[3px] bg-luxury-gold-dark mx-auto"
-              initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.25 }} />
+            <motion.div
+              className="w-16 h-[3px] mx-auto transition-colors duration-500"
+              style={{ background: hoveredProduct ? '#c8a96a' : '#b8975a' }}
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.25 }}
+            />
+
+            {/* Subtle category name label when hovering */}
+            <motion.p
+              animate={{ opacity: hoveredProduct ? 1 : 0, y: hoveredProduct ? 0 : 8 }}
+              transition={{ duration: 0.3 }}
+              className="text-[11px] tracking-[0.3em] uppercase font-bold"
+              style={{ color: hoveredProduct ? '#c8a96a' : 'transparent' }}
+            >
+              {hoveredProduct?.category || ''}
+            </motion.p>
           </div>
 
+          {/* Carousel */}
           <div className="relative w-full px-4 sm:px-16 lg:px-20">
-            {/* Carousel Viewport */}
-            <div className="overflow-hidden py-4 px-1">
+            {/* overflow-visible so the scaled-up card isn't clipped */}
+            <div className="overflow-visible py-10 px-2">
               <motion.div
                 className="flex gap-6"
                 animate={{
@@ -766,16 +807,21 @@ export default function Home({ onPageChange }) {
                 transition={{ type: 'spring', stiffness: 120, damping: 20 }}
               >
                 {featured.map((product) => (
-                  <div
+                  <motion.div
                     key={product.id}
-                    className="h-full transition duration-300"
+                    className="h-full"
                     style={{
                       width: `calc(${100 / visibleCards}% - ${24 * (visibleCards - 1) / visibleCards}px)`,
-                      flexShrink: 0
+                      flexShrink: 0,
+                      position: 'relative',
                     }}
+                    onHoverStart={() => setHoveredProduct(product)}
+                    onHoverEnd={() => setHoveredProduct(null)}
+                    whileHover={{ scale: 1.10, zIndex: 20 }}
+                    transition={{ type: 'spring', stiffness: 220, damping: 18 }}
                   >
                     <ProductCard product={product} onPageChange={onPageChange} />
-                  </div>
+                  </motion.div>
                 ))}
               </motion.div>
             </div>
@@ -801,6 +847,7 @@ export default function Home({ onPageChange }) {
             )}
           </div>
         </section>
+
 
         {/* ══════════ SPLIT VIDEO SHOWCASE SECTION ══════════ */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -31,6 +31,13 @@ const productSchema = new mongoose.Schema({
     waterResistance: { type: String },
     glass: { type: String }
   },
+  customizable: { type: Boolean, default: false },
+  customizationOptions: {
+    dialColors: [{ type: String }],
+    strapMaterials: [{ type: String }],
+    caseFinishes: [{ type: String }],
+    engravingAllowed: { type: Boolean, default: false }
+  },
   reviews: [reviewSchema]
 }, {
   timestamps: true,

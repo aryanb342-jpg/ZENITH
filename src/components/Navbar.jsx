@@ -71,6 +71,7 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
     { label: 'WOMEN', page: 'shop', filter: { gender: 'women' } },
     { label: 'SHOP ALL', page: 'shop' },
     { label: 'KHRONOMASTER', page: 'shop', filter: { category: 'Khronomaster' } },
+    { label: 'CUSTOMIZE', page: 'customization' },
   ];
 
   const handleNavLinkClick = (link) => {
@@ -114,12 +115,12 @@ export default function Navbar({ onCartOpen, onPageChange, currentPage }) {
           </div>
 
           {/* Left Navigation: Brand Links (Desktop) */}
-          <nav className="hidden md:flex space-x-8 text-sm lg:text-base font-black tracking-widest">
+          <nav className="hidden md:flex items-center gap-5 text-[11px] lg:text-xs font-black tracking-wider">
             {navLinks.map((link, idx) => (
               <button
                 key={idx}
                 onClick={() => handleNavLinkClick(link)}
-                className={`${textColorClass} transition duration-200 cursor-pointer ${
+                className={`whitespace-nowrap ${textColorClass} transition duration-200 cursor-pointer ${
                   currentPage === link.page ? 'text-luxury-gold' : ''
                 }`}
               >

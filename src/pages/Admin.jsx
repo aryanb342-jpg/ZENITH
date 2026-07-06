@@ -648,6 +648,25 @@ export default function Admin({ onPageChange }) {
                     />
                   </div>
 
+                  {/* Customizable Toggle */}
+                  <div className="flex items-center justify-between bg-luxury-dark border border-white/10 rounded p-3">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-white">Customizable</p>
+                      <p className="text-[9px] text-gray-500 mt-0.5">Show in Bespoke Atelier / Customization tab</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setEditForm({ ...editForm, customizable: !editForm.customizable })}
+                      className={`w-12 h-6 rounded-full transition-all duration-300 cursor-pointer relative ${
+                        editForm.customizable ? 'bg-luxury-gold' : 'bg-white/10'
+                      }`}
+                    >
+                      <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300 ${
+                        editForm.customizable ? 'left-6' : 'left-0.5'
+                      }`} />
+                    </button>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-3 pt-2">
                     <button
                       type="button"
@@ -687,7 +706,14 @@ export default function Admin({ onPageChange }) {
                       <div className="h-10 w-10 bg-luxury-dark border border-white/5 p-1 rounded flex items-center justify-center">
                         <img src={p.image} alt={p.name} className="max-h-full max-w-full object-contain" />
                       </div>
-                      <span className="font-semibold text-white truncate max-w-xs">{p.name}</span>
+                      <div>
+                        <span className="font-semibold text-white truncate max-w-xs block">{p.name}</span>
+                        {p.customizable && (
+                          <span className="text-[8px] text-luxury-gold font-black uppercase tracking-widest border border-luxury-gold/30 px-1.5 py-0.5 rounded-sm">
+                            ✦ Customizable
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="p-4 uppercase tracking-wider text-[10px] text-gray-400">{p.category}</td>
                     <td className="p-4 font-bold text-white">{formatPrice(p.price, currentCurrency)}</td>
