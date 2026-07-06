@@ -743,7 +743,7 @@ export default function Home({ onPageChange }) {
       {/* ══════════ FEATURED PRODUCTS ══════════ */}
       <div className="space-y-10 pb-12">
         <section
-          className="w-full py-14 space-y-10 transition-colors duration-500 ease-in-out"
+          className="w-full py-14 space-y-10 transition-colors duration-500 ease-in-out dark-panel"
           style={{
             background: hoveredProduct
               ? (() => {
@@ -754,10 +754,10 @@ export default function Home({ onPageChange }) {
                     : cat.includes('elite')     ? '#1a1003'
                     : '#12100a';
                 })()
-              : '#f9f8f6',
+              : '#000000',
           }}
         >
-          {/* Section header — text flips to white on dark bg */}
+          {/* Section header — text stays white on dark/black bg */}
           <div className="text-center max-w-2xl mx-auto space-y-3 px-4">
             <Reveal dir="up">
               <p
@@ -769,8 +769,7 @@ export default function Home({ onPageChange }) {
             </Reveal>
             <SlideReveal delay={0.1}>
               <h2
-                className="text-4xl sm:text-5xl font-black font-serif tracking-wide uppercase transition-colors duration-500"
-                style={{ color: hoveredProduct ? '#ffffff' : '#1c1a17' }}
+                className="text-4xl sm:text-5xl font-black font-serif tracking-wide uppercase transition-colors duration-500 text-white"
               >
                 Featured Masterpieces
               </h2>
@@ -852,7 +851,7 @@ export default function Home({ onPageChange }) {
         {/* ══════════ SPLIT VIDEO SHOWCASE SECTION ══════════ */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.section
-            className="flex flex-col lg:flex-row gap-8 bg-white border border-luxury-text/5 rounded-xl overflow-hidden shadow-md items-center justify-between p-6 sm:p-10"
+            className="flex flex-col lg:flex-row gap-8 items-center justify-between py-12"
             initial={{ opacity: 0, y: 48 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
@@ -923,30 +922,17 @@ export default function Home({ onPageChange }) {
               </motion.div>
             </div>
 
-            {/* Right Column: Two Normal Videos side-by-side (adjusted to exact 720x1280 aspect ratio) */}
-            <div className="flex flex-col sm:flex-row gap-0 w-full lg:w-auto flex-shrink-0 shadow-lg rounded-lg overflow-hidden">
-              <div className="w-full sm:w-auto h-[600px] aspect-[720/1280] relative bg-transparent flex-shrink-0">
-                <video 
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline 
-                  className="w-full h-full object-cover"
-                >
-                  <source src="/assets/quote_board.mp4" type="video/mp4" />
-                </video>
-              </div>
-              <div className="w-full sm:w-auto h-[600px] aspect-[720/1280] relative bg-transparent flex-shrink-0">
-                <video 
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline 
-                  className="w-full h-full object-cover"
-                >
-                  <source src="/assets/luxury_details.mp4" type="video/mp4" />
-                </video>
-              </div>
+            {/* Right Column: Single Video Showcase */}
+            <div className="w-full lg:w-[650px] h-[600px] relative bg-transparent flex-shrink-0 shadow-xl rounded-lg overflow-hidden border border-black/10">
+              <video 
+                autoPlay 
+                loop 
+                muted 
+                playsInline 
+                className="w-full h-full object-cover"
+              >
+                <source src="/assets/khroniq_updates.mp4" type="video/mp4" />
+              </video>
             </div>
           </motion.section>
         </div>
