@@ -21,6 +21,17 @@ export default function ProductDetail({ params, onPageChange }) {
   const [commentInput, setCommentInput] = useState('');
   const [reviewMessage, setReviewMessage] = useState('');
 
+  // Hover Zoom States & Handler
+  const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
+  const [isZoomed, setIsZoomed] = useState(false);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomPos({ x, y });
+  };
+
   if (!product) {
     return (
       <div className="text-center py-20 space-y-4">
@@ -103,21 +114,61 @@ export default function ProductDetail({ params, onPageChange }) {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         
         {/* Left Column: Image Gallery */}
-        <div className="lg:col-span-6 space-y-6">
-          <div className="bg-luxury-gray border border-white/5 rounded-md aspect-square flex items-center justify-center p-0 overflow-hidden relative">
+        <div className="lg:col-span-6 space-y-6 relative">
+          <div 
+            onMouseEnter={() => setIsZoomed(true)}
+            onMouseLeave={() => { setIsZoomed(false); setZoomPos({ x: 0, y: 0 }); }}
+            onMouseMove={handleMouseMove}
+            className="bg-luxury-gray border border-white/5 rounded-md aspect-square flex items-center justify-center p-0 overflow-hidden relative cursor-zoom-in"
+          >
             <img
               src={product.image}
               alt={product.name}
               className="w-full h-full object-cover filter drop-shadow-[0_15px_35px_rgba(0,0,0,0.6)]"
             />
+            
+            {/* Hover Target Rectangular Lens */}
+            {isZoomed && (
+              <div 
+                className="absolute rounded border border-luxury-gold bg-white/10 pointer-events-none hidden lg:block"
+                style={{
+                  width: '140px',
+                  height: '140px',
+                  left: `${zoomPos.x}%`,
+                  top: `${zoomPos.y}%`,
+                  transform: 'translate(-50%, -50%)',
+                  boxShadow: '0 0 15px rgba(197,168,128,0.4)',
+                }}
+              />
+            )}
+
             {product.stock === 0 && (
-              <div className="absolute inset-0 bg-black/75 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/75 flex items-center justify-center pointer-events-none">
                 <span className="text-luxury-red font-bold text-sm tracking-widest uppercase border border-luxury-red px-4 py-2">
                   Sold Out
                 </span>
               </div>
             )}
           </div>
+
+          {/* Side Rectangular Zoom Window */}
+          {isZoomed && (
+            <div 
+              className="absolute left-[104%] top-0 w-[500px] h-[500px] rounded-lg overflow-hidden border-2 border-luxury-gold bg-[#0d0d0d] z-40 pointer-events-none shadow-[0_25px_60px_rgba(0,0,0,0.65)] hidden lg:block"
+            >
+              <img 
+                src={product.image}
+                alt="Zoomed view"
+                className="absolute max-w-none"
+                style={{
+                  width: '300%',
+                  height: '300%',
+                  left: `${250 - (zoomPos.x / 100) * 3 * 500}px`,
+                  top: `${250 - (zoomPos.y / 100) * 3 * 500}px`,
+                }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Right Column: Order Details */}
@@ -138,7 +189,7 @@ export default function ProductDetail({ params, onPageChange }) {
                   />
                 ))}
               </div>
-              <span className="text-xs text-luxury-muted">
+              <span className="text-xs text-gray-500">
                 {averageRating ? `${averageRating} / 5.0 (${approvedReviews.length} reviews)` : 'No approved reviews yet'}
               </span>
             </div>
@@ -146,25 +197,25 @@ export default function ProductDetail({ params, onPageChange }) {
 
           <p className="text-2xl font-bold text-luxury-text">{formatPrice(product.price, currentCurrency)}</p>
           
-          <p className="text-luxury-muted text-xs sm:text-sm leading-relaxed font-light">{product.description}</p>
+          <p className="text-gray-700 text-xs sm:text-sm leading-relaxed font-normal">{product.description}</p>
 
           <div className="border-t border-b border-luxury-text/10 py-6 space-y-4">
             {/* Quantity Selector & Stock Indicator */}
             {product.stock > 0 ? (
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                  <span className="text-[10px] text-luxury-muted font-bold uppercase tracking-widest">Select Quantity</span>
+                  <span className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">Select Quantity</span>
                   <div className="flex items-center border border-luxury-text/10 rounded bg-white">
                     <button
                       onClick={() => setQty(Math.max(1, qty - 1))}
-                      className="p-2 text-luxury-muted hover:text-luxury-text cursor-pointer"
+                      className="p-2 text-gray-400 hover:text-gray-700 cursor-pointer"
                     >
                       <Minus size={14} />
                     </button>
                     <span className="px-6 text-sm font-semibold text-luxury-text">{qty}</span>
                     <button
                       onClick={() => setQty(Math.min(product.stock, qty + 1))}
-                      className="p-2 text-luxury-muted hover:text-luxury-text cursor-pointer"
+                      className="p-2 text-gray-400 hover:text-gray-700 cursor-pointer"
                     >
                       <Plus size={14} />
                     </button>
@@ -176,7 +227,7 @@ export default function ProductDetail({ params, onPageChange }) {
                     <CheckCircle2 size={12} />
                     <span>In Stock (Only {product.stock} left)</span>
                   </span>
-                  <p className="text-[10px] text-luxury-muted/70 mt-0.5">Complementary Express Shipping & Returns</p>
+                  <p className="text-[10px] text-gray-500 mt-0.5">Complementary Express Shipping & Returns</p>
                 </div>
               </div>
             ) : (
@@ -213,18 +264,18 @@ export default function ProductDetail({ params, onPageChange }) {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-white p-4 border border-luxury-text/5 rounded shadow-sm">
             <div className="flex flex-col items-center text-center p-2 space-y-1">
               <Truck size={18} className="text-luxury-gold-dark" />
-              <span className="text-[9px] font-bold text-luxury-text tracking-widest uppercase">FREE SHIPPING</span>
-              <p className="text-[9px] text-luxury-muted">2-4 Business Days Express</p>
+              <span className="text-[9px] font-bold text-gray-800 tracking-widest uppercase">FREE SHIPPING</span>
+              <p className="text-[9px] text-gray-500">2-4 Business Days Express</p>
             </div>
             <div className="flex flex-col items-center text-center p-2 space-y-1 border-t sm:border-t-0 sm:border-l sm:border-r border-luxury-text/10">
               <RefreshCw size={18} className="text-luxury-gold-dark" />
-              <span className="text-[9px] font-bold text-luxury-text tracking-widest uppercase">EASY RETURNS</span>
-              <p className="text-[9px] text-luxury-muted">14-day free return policy</p>
+              <span className="text-[9px] font-bold text-gray-800 tracking-widest uppercase">EASY RETURNS</span>
+              <p className="text-[9px] text-gray-500">14-day free return policy</p>
             </div>
             <div className="flex flex-col items-center text-center p-2 space-y-1">
               <Shield size={18} className="text-luxury-gold-dark" />
-              <span className="text-[9px] font-bold text-luxury-text tracking-widest uppercase">WARRANTY</span>
-              <p className="text-[9px] text-luxury-muted">3-Year Swiss warranty</p>
+              <span className="text-[9px] font-bold text-gray-800 tracking-widest uppercase">WARRANTY</span>
+              <p className="text-[9px] text-gray-500">3-Year Swiss warranty</p>
             </div>
           </div>
 
@@ -260,40 +311,40 @@ export default function ProductDetail({ params, onPageChange }) {
         {activeTab === 'specs' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-xs bg-white border border-luxury-text/10 rounded p-6 sm:p-8 shadow-sm">
             <div className="flex justify-between py-2 border-b border-luxury-text/10">
-              <span className="text-luxury-muted tracking-wider">MOVEMENT TYPE</span>
-              <span className="text-luxury-text font-semibold uppercase">{product.specs.movement}</span>
+              <span className="text-gray-500 tracking-wider">MOVEMENT TYPE</span>
+              <span className="text-gray-800 font-semibold uppercase">{product.specs.movement}</span>
             </div>
             <div className="flex justify-between py-2 border-b border-luxury-text/10">
-              <span className="text-luxury-muted tracking-wider">CASE DIMENSIONS</span>
-              <span className="text-luxury-text font-semibold uppercase">{product.specs.case}</span>
+              <span className="text-gray-500 tracking-wider">CASE DIMENSIONS</span>
+              <span className="text-gray-800 font-semibold uppercase">{product.specs.case}</span>
             </div>
             <div className="flex justify-between py-2 border-b border-luxury-text/10">
-              <span className="text-luxury-muted tracking-wider">STRAP MATERIAL</span>
-              <span className="text-luxury-text font-semibold uppercase">{product.specs.strap}</span>
+              <span className="text-gray-500 tracking-wider">STRAP MATERIAL</span>
+              <span className="text-gray-800 font-semibold uppercase">{product.specs.strap}</span>
             </div>
             <div className="flex justify-between py-2 border-b border-luxury-text/10">
-              <span className="text-luxury-muted tracking-wider">WATER RESISTANCE</span>
-              <span className="text-luxury-text font-semibold uppercase">{product.specs.waterResistance}</span>
+              <span className="text-gray-500 tracking-wider">WATER RESISTANCE</span>
+              <span className="text-gray-800 font-semibold uppercase">{product.specs.waterResistance}</span>
             </div>
             <div className="flex justify-between py-2 md:border-b-0 border-b border-luxury-text/10">
-              <span className="text-luxury-muted tracking-wider">DIAL GLASS TYPE</span>
-              <span className="text-luxury-text font-semibold uppercase">{product.specs.glass}</span>
+              <span className="text-gray-500 tracking-wider">DIAL GLASS TYPE</span>
+              <span className="text-gray-800 font-semibold uppercase">{product.specs.glass}</span>
             </div>
             <div className="flex justify-between py-2">
-              <span className="text-luxury-muted tracking-wider">ORIGIN</span>
-              <span className="text-luxury-text font-semibold uppercase">Swiss Made (Le Locle)</span>
+              <span className="text-gray-500 tracking-wider">ORIGIN</span>
+              <span className="text-gray-800 font-semibold uppercase">Swiss Made (Le Locle)</span>
             </div>
           </div>
         )}
 
         {/* Tab Content: Details */}
         {activeTab === 'details' && (
-          <div className="space-y-4 text-xs sm:text-sm text-luxury-text font-light leading-relaxed max-w-4xl bg-white border border-luxury-text/10 rounded p-6 sm:p-8 shadow-sm">
-            <h4 className="text-luxury-text font-bold tracking-wider uppercase text-xs">The Khroniq Spirit of Innovation</h4>
-            <p className="text-luxury-muted">
+          <div className="space-y-4 text-xs sm:text-sm text-gray-800 font-normal leading-relaxed max-w-4xl bg-white border border-luxury-text/10 rounded p-6 sm:p-8 shadow-sm">
+            <h4 className="text-gray-800 font-bold tracking-wider uppercase text-xs">The Khroniq Spirit of Innovation</h4>
+            <p className="text-gray-600 font-normal">
               Each Khroniq watch is crafted with painstaking precision in our historic manufacture in Le Locle. By integrating dial production, case tooling, movement machining, and fine-tuning calibration under a single Swiss roof, Khroniq ensures every component complies with strict COSC chronometer specifications.
             </p>
-            <p className="text-luxury-muted">
+            <p className="text-gray-600 font-normal">
               The double anti-reflective sapphire dial glass ensures absolute clarity, shielding the watch indexes from solar glare and scratches. Fitted with premium gaskets, the case delivers advanced seals for water safety, maintaining structural integrity across varying atmospheres.
             </p>
           </div>
@@ -307,14 +358,14 @@ export default function ProductDetail({ params, onPageChange }) {
           <h3 className="text-lg font-bold font-serif uppercase tracking-widest text-luxury-text">Client Reviews</h3>
           
           {approvedReviews.length === 0 ? (
-            <p className="text-luxury-muted text-xs italic">No reviews found for this timepiece yet.</p>
+            <p className="text-gray-500 text-xs italic">No reviews found for this timepiece yet.</p>
           ) : (
             <div className="space-y-4">
               {approvedReviews.map((rev) => (
                 <div key={rev.id} className="bg-white border border-luxury-text/10 p-5 rounded shadow-sm">
                   <div className="flex justify-between items-start">
                     <div className="space-y-1">
-                      <p className="text-luxury-text text-xs font-semibold">{rev.userName}</p>
+                      <p className="text-gray-800 text-xs font-semibold">{rev.userName}</p>
                       {/* Star icons */}
                       <div className="flex text-luxury-gold-dark">
                         {[...Array(5)].map((_, i) => (
@@ -327,9 +378,9 @@ export default function ProductDetail({ params, onPageChange }) {
                         ))}
                       </div>
                     </div>
-                    <span className="text-[10px] text-luxury-muted font-medium">{rev.date}</span>
+                    <span className="text-[10px] text-gray-500 font-medium">{rev.date}</span>
                   </div>
-                  <p className="text-luxury-muted text-xs mt-3 leading-relaxed font-light">{rev.comment}</p>
+                  <p className="text-gray-600 text-xs mt-3 leading-relaxed font-normal">{rev.comment}</p>
                 </div>
               ))}
             </div>
@@ -350,7 +401,7 @@ export default function ProductDetail({ params, onPageChange }) {
             <form onSubmit={handleReviewSubmit} className="space-y-4">
               {/* Rating selection */}
               <div className="space-y-1.5">
-                <label className="text-[10px] text-luxury-muted font-bold uppercase tracking-widest block">Rating Score</label>
+                <label className="text-[10px] text-gray-600 font-bold uppercase tracking-widest block">Rating Score</label>
                 <div className="flex space-x-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -370,7 +421,7 @@ export default function ProductDetail({ params, onPageChange }) {
 
               {/* Review Text */}
               <div className="space-y-1.5">
-                <label className="text-[10px] text-luxury-muted font-bold uppercase tracking-widest block">Review Details</label>
+                <label className="text-[10px] text-gray-600 font-bold uppercase tracking-widest block">Review Details</label>
                 <textarea
                   rows="4"
                   value={commentInput}
@@ -390,7 +441,7 @@ export default function ProductDetail({ params, onPageChange }) {
             </form>
           ) : (
             <div className="text-center py-4 space-y-3">
-              <p className="text-luxury-muted text-xs">Please log in to submit a rating and review for this timepiece.</p>
+              <p className="text-gray-600 text-xs">Please log in to submit a rating and review for this timepiece.</p>
               <button
                 onClick={() => onPageChange('login', { redirect: `product-detail:${product.id}` })}
                 className="px-4 py-2 bg-transparent border border-luxury-text/20 text-luxury-text font-semibold text-xs tracking-widest uppercase hover:border-luxury-text transition cursor-pointer"

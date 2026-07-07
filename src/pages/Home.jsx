@@ -1,6 +1,7 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import ProductCard from '../components/ProductCard';
+import LogoMark from '../components/LogoMark';
 import {
   motion,
   useMotionValue,
@@ -286,7 +287,7 @@ function CollectionCard({ col, idx, onPageChange }) {
       onMouseMove={onMove}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={onLeave}
-      className="relative h-[780px] border border-luxury-text/10 rounded-xl overflow-hidden cursor-pointer flex flex-col justify-end p-10 sm:p-12 bg-white"
+      className="relative h-[780px] border border-luxury-text/10 rounded-xl overflow-hidden cursor-pointer flex flex-col justify-end p-10 sm:p-12 bg-luxury-dark"
       variants={enterAnims[idx]}
       initial="hidden"
       whileInView="visible"
@@ -295,7 +296,7 @@ function CollectionCard({ col, idx, onPageChange }) {
       style={{
         rotateX: rx, rotateY: ry,
         transformStyle: 'preserve-3d',
-        boxShadow: hov ? `0 30px 70px ${col.accent}30` : '0 4px 20px rgba(0,0,0,0.06)',
+        boxShadow: hov ? `0 30px 70px ${col.accent}30` : '0 4px 20px rgba(0,0,0,0.3)',
         transition: 'box-shadow 0.25s ease',
       }}
     >
@@ -308,7 +309,7 @@ function CollectionCard({ col, idx, onPageChange }) {
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         />
       </motion.div>
-      <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent z-[1]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-[1]" />
 
       {/* Accent bar from center */}
       <motion.div
@@ -321,7 +322,7 @@ function CollectionCard({ col, idx, onPageChange }) {
       {/* Glint diagonal sweep */}
       <motion.div
         className="absolute inset-0 pointer-events-none z-[2]"
-        style={{ background: 'linear-gradient(110deg, transparent 38%, rgba(255,255,255,0.18) 50%, transparent 62%)' }}
+        style={{ background: 'linear-gradient(110deg, transparent 38%, rgba(255,255,255,0.08) 50%, transparent 62%)' }}
         animate={hov ? { x: ['−120%', '220%'] } : { x: '-120%' }}
         transition={{ duration: 0.45, ease: 'easeOut' }}
       />
@@ -330,7 +331,7 @@ function CollectionCard({ col, idx, onPageChange }) {
       <div className="relative z-10 space-y-3" style={{ transform: 'translateZ(30px)' }}>
         <motion.span
           className="block text-[11px] font-extrabold tracking-[0.2em] uppercase"
-          style={{ color: '#000000' }}
+          style={{ color: '#c5a880' }}
           animate={{ letterSpacing: hov ? '0.28em' : '0.2em' }}
           transition={{ duration: 0.2 }}
         >
@@ -338,18 +339,17 @@ function CollectionCard({ col, idx, onPageChange }) {
         </motion.span>
         <motion.h3
           className="text-3xl sm:text-4xl font-serif font-black uppercase"
-          animate={{ color: hov ? '#1e40af' : '#000000', y: hov ? -3 : 0 }}
+          animate={{ color: hov ? col.accent : '#ffffff', y: hov ? -3 : 0 }}
           transition={{ duration: 0.2 }}
         >
           {col.name}
         </motion.h3>
-        <p className="text-black text-sm font-medium leading-relaxed line-clamp-2">
+        <p className="text-white/80 text-sm font-medium leading-relaxed line-clamp-2">
           {col.desc}
         </p>
         <motion.div
           className="flex items-center gap-2 text-sm font-bold pt-1"
-          style={{ color: '#000000' }}
-          animate={{ x: hov ? 5 : 0, gap: hov ? 14 : 8 }}
+          animate={{ x: hov ? 5 : 0, gap: hov ? 14 : 8, color: hov ? col.accent : '#ffffff' }}
           transition={{ duration: 0.18 }}
         >
           <span>DISCOVER</span><ArrowRight size={13} />
@@ -696,17 +696,46 @@ export default function Home({ onPageChange }) {
       {/* ══════════ COLLECTIONS ══════════
           Each card: different enter anim + full 3-D mouse-track tilt + image parallax */}
       <section className="w-full px-4 sm:px-8 lg:px-12 pt-32 pb-24 space-y-14">
-        <div className="text-center max-w-2xl mx-auto space-y-3">
+        <div className="text-center max-w-3xl mx-auto space-y-4">
           <Reveal dir="flip">
-            <p className="text-xs text-luxury-gold-dark font-black tracking-[0.22em] uppercase">The Pillars of KHRONIQ</p>
+            <p className="text-xs text-luxury-gold-dark font-black tracking-[0.3em] uppercase">The Pillars of KHRONIQ</p>
           </Reveal>
-          <motion.div 
-            className="w-20 h-[3px] bg-luxury-gold-dark mx-auto"
-            initial={{ scaleX: 0 }} 
-            whileInView={{ scaleX: 1 }} 
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: 'easeOut' }} 
-          />
+          
+          <Reveal dir="up" delay={0.15}>
+            <h2 className="text-4xl sm:text-5xl font-serif font-bold text-luxury-text tracking-wide uppercase">
+              Signature Collections
+            </h2>
+          </Reveal>
+          
+          <div className="flex items-center justify-center gap-5 mt-2">
+            <motion.div 
+              className="h-[1.5px] bg-gradient-to-r from-transparent to-luxury-gold-dark"
+              initial={{ width: 0 }}
+              whileInView={{ width: '80px' }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, ease: 'easeOut' }}
+              style={{ width: '80px' }}
+            />
+            <img 
+              src="/assets/logo_icon.png" 
+              alt="Logo Mark" 
+              className="w-5 h-5 object-contain opacity-90 filter drop-shadow-[0_0_8px_rgba(197,168,128,0.5)]" 
+            />
+            <motion.div 
+              className="h-[1.5px] bg-gradient-to-l from-transparent to-luxury-gold-dark"
+              initial={{ width: 0 }}
+              whileInView={{ width: '80px' }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, ease: 'easeOut' }}
+              style={{ width: '80px' }}
+            />
+          </div>
+          
+          <Reveal dir="up" delay={0.3}>
+            <p className="text-luxury-muted text-xs sm:text-sm max-w-xl mx-auto font-light leading-relaxed">
+              Explore our historic lineages, where centuries-old watchmaking heritage meets vanguard design engineering.
+            </p>
+          </Reveal>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -727,14 +756,9 @@ export default function Home({ onPageChange }) {
           {[...Array(8)].map((_, i) => (
             <React.Fragment key={i}>
               <span style={{ color: '#ffffff', fontFamily: 'Georgia, serif', letterSpacing: '0.18em' }} className="text-2xl sm:text-3xl font-bold uppercase mx-10 whitespace-nowrap shrink-0">
-                EVERY KHRONIQ WATCH HAS A SOUL AND A STORY TO BE WORN.
+                Born From The Movement Of Time
               </span>
-              <img
-                src="/assets/media__1782899491297.jpg"
-                alt="watch"
-                className="h-10 w-10 object-cover rounded-full mx-4 opacity-80 shrink-0"
-                style={{ filter: 'brightness(1.1) contrast(1.05)' }}
-              />
+              <LogoMark className="h-9 w-9 mx-4 shrink-0 opacity-95" />
             </React.Fragment>
           ))}
         </motion.div>

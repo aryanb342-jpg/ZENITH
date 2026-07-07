@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Star, Mail, ShieldCheck, ArrowRight, Clock, Award, Gem } from 'lucide-react';
+import { Mail, ShieldCheck, ArrowRight, Clock, Award, Gem } from 'lucide-react';
+import LogoMark from './LogoMark';
 
 /* ─── tiny hook: fires once when element enters viewport ─── */
 function useInView(threshold = 0.15) {
@@ -133,18 +134,16 @@ export default function Footer({ onPageChange }) {
             }}>
               {/* Logo */}
               <div className="flex items-center space-x-3 mb-8">
-                <div style={{
-                  width:'38px', height:'38px', borderRadius:'50%',
-                  border:'1.5px solid #c5a880',
-                  display:'flex', alignItems:'center', justifyContent:'center',
-                }}>
-                  <Star size={18} style={{ color:'#c5a880' }} fill="#c5a880" />
-                </div>
-                <span style={{
-                  fontFamily:"'Playfair Display', Georgia, serif",
-                  fontSize:'1.6rem', fontWeight:700,
-                  letterSpacing:'0.22em', color:'#ffffff',
-                }}>KHRONIQ</span>
+                <img 
+                  src="/assets/logo_icon.png" 
+                  alt="KHRONIQ Logo" 
+                  className="w-9 h-9 object-contain" 
+                />
+                <img 
+                  src="/assets/logo_text.png" 
+                  alt="KHRONIQ" 
+                  className="h-7 object-contain mt-0.5" 
+                />
               </div>
 
               {/* Divider */}
@@ -247,7 +246,7 @@ export default function Footer({ onPageChange }) {
                     borderRadius:'2px',
                     textAlign:'center',
                   }}>
-                    <Star size={18} style={{ color:'#c5a880', margin:'0 auto 0.5rem' }} fill="#c5a880" />
+                    <LogoMark className="w-5 h-5 mx-auto mb-2" />
                     <p style={{ fontSize:'0.75rem', color:'#c5a880', fontWeight:600, letterSpacing:'0.05em' }}>
                       Welcome to the Inner Circle.
                     </p>
@@ -441,7 +440,7 @@ export default function Footer({ onPageChange }) {
 
           {/* Left – copyright */}
           <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-            <Star size={10} style={{ color:'#c5a880' }} fill="#c5a880" />
+            <LogoMark className="w-3.5 h-3.5" />
             <p style={{ fontSize:'0.62rem', color:'rgba(200,190,175,0.38)', letterSpacing:'0.08em' }}>
               © 2026 KHRONIQ Watches. All Rights Reserved. Inspired by Swiss Precision.
             </p>

@@ -85,7 +85,7 @@ function WatchPreview({ product, dialColor, finish, engraving }) {
 
           {/* Brand name */}
           <span
-            className="text-[9px] font-black tracking-[0.2em] uppercase mt-10"
+            className="font-cinzel text-[10px] font-bold tracking-[0.2em] uppercase mt-10"
             style={{ color: dialColor?.textDark ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)' }}
           >
             KHRONIQ
